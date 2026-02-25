@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Gallery</title>
+
+<style>
+
+/* ================= フォント ================= */
+
+@font-face{
+    font-family:'Bespoke';
+    src:url('../fonts/Bespoke-MjPdRlygxs.ttf');
+}
+
+@font-face{
+    font-family:'GeorgiaCustom';
+    src:url('../fonts/Courier New.ttf');
+}
+
+/* ================= 全体 ================= */
+
+body{
+    margin:0;
+    background:#290db7;
+    font-family:'Bespoke';
+    color:white;
+}
+
+/* ================= ロゴ ================= */
+
+.logo{
+    position:fixed;
+    top:30px;
+    left:60px;
+    padding:10px 25px;
+    border:1px solid white;
+    border-radius:40px;
+    text-decoration:none;
+    color:white;
+    z-index:100;
+}
+
+/* ================= メニュー ================= */
+
+.menu-btn{
+    position:fixed;
+    top:10px;
+    right:50px;
+    font-size:40px;
+    cursor:pointer;
+    z-index:10000;
+}
+
+.menu{
+    position:fixed;
+    top:0;
+    right:0px;
+    width:150px;
+    height:100vh;
+    background:#290db7;
+    padding:120px 60px;
+    transform:translateX(100%);
+    transition:transform .5s ease;
+
+    z-index: 9999;
+}
+
+.menu a{
+    display:block;
+    color:rgb(255, 255, 255);
+    text-decoration:none;
+    font-size:20px;
+    margin-bottom:40px;
+    font-family:'Bespoke';
+}
+
+.menu.open{
+    transform:translateX(0);
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .4s ease;
+    z-index:9000;
+}
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+
+/* ================= タイトル ================= */
+
+.page-title{
+    margin:100px 0 30px 10%;
+    font-size:55px;
+    font-weight:500;
+}
+
+/* ================= 本 ================= */
+
+.book-wrapper{
+    position:relative;
+    width:1000px;   /* ← 固定 */
+    margin:0 auto 120px auto;
+}
+
+.book-bg{
+    width:100%;
+    display:block;
+}
+
+/* 本の中 */
+
+.book-inner{
+    position:absolute;
+
+    inset:30px;   /* ← 四周すべて30pxの余白 */
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    column-gap:80px;
+
+    font-family:'GeorgiaCustom';
+    color:#3b3b3b;
+}
+
+/* 共通テーマ行 */
+.theme-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    margin-bottom:3px;
+    border-bottom:0.8px solid #474747;
+    padding:5px 0;                /* 余白調整 */
+    margin-bottom:3px;            /* 間隔を縮める */
+    text-decoration:none;
+    color:#3b3b3b;
+    font-size:16px;
+    gap:10px;
+}
+
+/* タイトル＋副タイトルブロック */
+.text-block{
+    display:flex;
+    flex-direction:column;
+}
+
+/* 全タイトルにアンダーライン */
+.theme-title{
+    text-decoration:underline;
+}
+
+/* 副タイトル */
+.subtitle{
+    font-size:12px;
+    margin-top:10px;
+    line-height:1.2;
+    color:#666;
+}
+
+/* サムネ共通 */
+.theme-row img{
+    width:150px;
+    height:105px;
+    object-fit:cover;
+}
+
+/* 左画像バージョン */
+.left-image{
+    flex-direction:row;
+}
+
+.right-image{
+    flex-direction:row;
+}
+
+.main-title-box{
+    background:#372902;
+    color:#fff;
+    padding:8px 10px;
+    display:inline-block;
+    margin-bottom:60px;
+}
+
+.main-title-box h1{
+    font-size:18px;
+    letter-spacing:1px;
+    margin:0;
+}
+
+/* 区切り線 */
+.section-line{
+    border:none;
+    border-top:1px solid #3e3e3e;
+    margin:60px 0 5px 0;
+}
+
+/* FACEタイトルだけ特別 */
+
+
+.theme-row img.face-thumb{
+    width:410px !important;
+    height:180px !important;
+}
+
+
+/* ================= ページ送り ================= */
+
+.pagination{
+    text-align:center;
+    margin-top:1px;
+    font-family:'Bespoke';
+}
+
+.page-btn{
+    font-size:20px;
+    cursor:pointer;
+    margin:0 50px;
+}
+
+.page-number{
+    font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<a href="../index.html" class="logo">Heavenward Submarine</a>
+
+<div class="menu-btn" onclick="toggleMenu()">≡</div>
+
+<div class="menu" id="menu">
+    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../gallery/gallery.html">Gallery</a>
+    <a href="../NewRelease/NewRelease.html">New Release</a>
+    <a href="../About/About.html">About</a>
+    <a href="../Contact/Contact.html">Contact</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<h1 class="page-title">Gallery</h1>
+
+<div class="book-wrapper">
+
+    <img src="../gallery/images/book-bg.png" class="book-bg">
+
+    <div class="book-inner">
+
+        <!-- 左ページ -->
+        <div>
+            
+            <div class="main-title-box">
+                 <h1>Collection Photography</h1>
+            </div>
+
+        <hr class="section-line">
+        
+
+              <a href="../FACE book/FACE book.html" class="theme-row face-row">
+                <img src="../FACE book/images/サムネイル.png" class="face-thumb">
+                <div class="text-block"></div>
+            </a>
+
+           
+            <a href="../Don’t say Goodnight/Don’t say Goodnight.html" class="theme-row left-imag">
+                <img src="../Don’t say Goodnight/images/サムネイル.jpg">
+                <div class="text-block">
+                    <span class="theme-title">Don’t say Goodnight</span>
+                    <span class="subtitle"><p><i>Zu Bar, Shibuya</i><p></span>
+                </div>
+            </a>
+
+            <a href="../Ledmaynes SS25/Ledmaynes SS25.html" class="theme-row right-image">
+                <div class="text-block">
+                   <span class="theme-title">Ledmaynes SS25</span> 
+                </div>
+                <img src="../Ledmaynes SS25/images/サムネイル.jpg">
+            </a>
+
+        </div>
+
+        <!-- 右ページ -->
+        <div>
+
+            <a href="../Carols実験/Carols実験.html" class="theme-row right-image">
+    <div class="text-block">
+        <span class="theme-title">Carols実験</span>
+    </div>
+    <img src="../Carols実験/images/サムネイル.jpg">
+</a>
+
+<a href="../HangZhou Portrait/HangZhou Portrait.html" class="theme-row left-image">
+    <img src="../HangZhou Portrait/images/サムネイル.jpg">
+    <div class="text-block">
+        <span class="theme-title">HangZhou Portrait</span>
+    </div>
+</a>
+
+<a href="../Red/Red.html" class="theme-row right-image">
+    <div class="text-block">
+        <span class="theme-title">Red</span>
+    </div>
+    <img src="../Red/images/サムネイル.jpg">
+</a>
+
+<a href="../Downward is Heavenward/Downward is Heavenward.html" class="theme-row left-image">
+    <img src="../Downward is Heavenward/images/サムネイル.jpg">
+    <div class="text-block">
+        <span class="theme-title">*Downward is Heavenward*</span>
+        <span class="subtitle"><p><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:<br>
+        {“A dusty sleep you took too soon,”:<br>
+        {“and you need watering if you are to bloom.}}</i><p></p></span>
+    </div>
+</a>
+
+<a href="../Go for Your Guns/Go for Your Guns.html" class="theme-row right-image">
+    <div class="text-block">
+        <span class="theme-title">Go for Your Guns</span>
+    </div>
+    <img src="../Go for Your Guns/images/サムネイル.jpg">
+</a>
+
+        </div>
+
+    </div>
+
+    <div class="pagination">
+         <span class="page-btn">«</span>
+         <span class="page-number">1 / 1</span>
+         <span class="page-btn">»</span>
+    </div>
+
+    
+</div>
+
+
+
+<script>
+function toggleMenu(){
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+</script>
+
+</body>
+</html>

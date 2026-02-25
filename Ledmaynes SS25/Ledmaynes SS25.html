@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Ledmaynes SS25</title>
+
+<style>
+
+/* ================= フォント ================= */
+
+@font-face{
+    font-family:'Bespoke';
+    src:url('../fonts/Bespoke-MjPdRlygxs.ttf');
+}
+
+/* ================= 全体 ================= */
+
+body{
+    margin:0;
+    background:#290db7;
+    padding-bottom: 200px;
+    cursor:grab;
+}
+
+body.dragging{
+    cursor:grabbing;
+}
+
+/* ================= ナビ ================= */
+
+.logo{
+    position:fixed;
+    top:30px;
+    left:60px;
+    padding:10px 25px;
+    border:1px solid white;
+    border-radius:40px;
+    text-decoration:none;
+    color:white;
+    font-family:'Bespoke';
+    z-index:100;
+}
+
+/* ================= 横ギャラリー ================= */
+
+.horizontal-gallery{
+    position:relative;
+    display:flex;
+    gap:10px;
+    padding:170px 20vw 0 20vw;
+    user-select:none;
+}
+
+.horizontal-gallery + .horizontal-gallery{
+    margin-top:60px;
+}
+
+.horizontal-gallery img{
+    width:850px;
+    height:550px;
+    object-fit:cover;
+    cursor:grab;
+    -webkit-user-drag:none;
+}
+
+/* ================= メニュー ================= */
+
+.menu-btn{
+    position:fixed;
+    top:10px;
+    right:50px;
+    font-size:40px;
+    cursor:pointer;
+    z-index:10000;
+    color:white;
+}
+
+.menu{
+    position:fixed;
+    top:0;
+    right:0;
+    width:150px;
+    height:100vh;
+    background:#290db7;
+    padding:120px 60px;
+    transform:translateX(100%);
+    transition:.5s ease;
+    z-index:9999;
+}
+
+.menu a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    font-size:20px;
+    margin-bottom:40px;
+    font-family:'Bespoke';
+}
+
+.menu.open{
+    transform:translateX(0);
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:.4s ease;
+    z-index:9000;
+}
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+/* ================= タイトル ================= */
+
+.project-title{
+    position:fixed;
+    bottom:40px;
+    left:60px;
+    width:700px;
+    color:white;
+    font-family:'Bespoke';
+    z-index:200;
+}
+
+.project-title h1{
+    margin:0;
+    font-size:40px;
+    font-weight:400;
+}
+
+.project-title p{
+    font-size:12px;
+    margin-top:10px;
+    line: height 1.2em;
+}
+
+</style>
+</head>
+
+<body>
+
+<a href="../gallery/gallery.html" class="logo">Gallery</a>
+
+<div class="menu-btn" onclick="toggleMenu()">≡</div>
+
+<div class="menu" id="menu">
+    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../gallery/gallery.html">Gallery</a>
+    <a href="../NewRelease/NewRelease.html">New Release</a>
+    <a href="../About/About.html">About</a>
+    <a href="../Contact/Contact.html">Contact</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<!-- ===== Gallery 1 ===== -->
+
+<div class="horizontal-gallery">
+    <img src="images/サムネイル.jpg">
+    <img src="images/2.webp">
+    <img src="images/5.webp.png">
+    <img src="images/6.webp.png">
+    <img src="images/1.webp">
+    <img src="images/4.webp">
+    <img src="images/7.webp.png">
+    <img src="images/3.webp">
+    <img src="images/8.webp">
+</div>
+
+<!-- ===== Title ===== -->
+
+<div class="project-title">
+    <h1>Ledmaynes SS25 collection</h1>
+    <p>
+        "recto verso"<br>  
+        2025, Tokyo, Japan.<br>
+         <p><i>Model: @brookegabel @svevino<br>
+               Design: @chi._ledmaynes<br>
+               Photo: @ko.bezu    Hair/Make: @eri.pms<br>
+           </i></p>
+    </p>
+</div>
+
+<!-- ===== Gallery 2 ===== -->
+
+<div class="horizontal-gallery">
+    <img src="images/9.png">
+    <img src="images/10.png">
+    <img src="images/12.jpg">
+    <img src="images/13.jpg">
+    <img src="images/15.png">
+    <img src="images/14.jpg">
+    <img src="images/16.jpg">
+    <img src="images/17.png">
+    <img src="images/11.png">
+    <img src="images/18.jpg">
+</div>
+<script>
+
+const galleries = document.querySelectorAll(".horizontal-gallery");
+
+let isDown = false;
+let startX = 0;
+
+let states = [];
+
+galleries.forEach((gallery,index)=>{
+    states[index] = {
+        current:0,
+        target:0
+    };
+});
+
+/* ===== ドラッグ ===== */
+
+document.addEventListener("mousedown", (e)=>{
+    isDown = true;
+    startX = e.clientX;
+    document.body.classList.add("dragging");
+});
+
+document.addEventListener("mouseup", ()=>{
+    isDown = false;
+    document.body.classList.remove("dragging");
+});
+
+document.addEventListener("mousemove", (e)=>{
+    if(!isDown) return;
+
+    const dx = e.clientX - startX;
+    startX = e.clientX;
+
+    galleries.forEach((gallery,index)=>{
+        states[index].target += dx;
+    });
+});
+
+/* ===== アニメーション ===== */
+
+function animate(){
+
+    galleries.forEach((gallery,index)=>{
+
+        const state = states[index];
+
+        state.current += (state.target - state.current) * 0.1;
+
+        const maxLeft = 0;
+        const maxRight = -(gallery.scrollWidth - window.innerWidth);
+
+        if(state.current > maxLeft) state.current = maxLeft;
+        if(state.current < maxRight) state.current = maxRight;
+
+        gallery.style.transform =
+            `translateX(${state.current}px)`;
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+/* ===== クリック中央 ===== */
+
+galleries.forEach((gallery,index)=>{
+
+    gallery.querySelectorAll("img").forEach(img=>{
+
+        img.addEventListener("click", ()=>{
+
+            const rect = img.getBoundingClientRect();
+            const imgCenter = rect.left + rect.width / 2;
+            const screenCenter = window.innerWidth / 2;
+
+            states[index].target += screenCenter - imgCenter;
+        });
+
+    });
+});
+
+/* ===== メニュー ===== */
+
+function toggleMenu(){
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+</script>
+
+</body>
+</html>

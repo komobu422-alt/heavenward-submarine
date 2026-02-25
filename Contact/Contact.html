@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Contact</title>
+
+<style>
+
+/* ================= フォント ================= */
+
+@font-face{
+    font-family:'Bespoke';
+    src:url('../fonts/Bespoke-MjPdRlygxs.ttf');
+}
+
+/* ================= 全体 ================= */
+
+body{
+    margin:0;
+    background:#290db7;
+    font-family:'Bespoke';
+    color:white;
+}
+
+/* ================= ロゴ ================= */
+
+.logo{
+    position:fixed;
+    top:30px;
+    left:60px;
+    padding:10px 25px;
+    border:1px solid white;
+    border-radius:40px;
+    text-decoration:none;
+    color:white;
+    z-index:100;
+}
+
+/* ================= メニュー ================= */
+
+.menu-btn{
+    position:fixed;
+    top:10px;
+    right:50px;
+    font-size:40px;
+    cursor:pointer;
+    z-index:10000;
+    color:white;
+}
+
+.menu{
+    position:fixed;
+    top:0;
+    right:0;
+    width:150px;
+    height:100vh;
+    background:#290db7;
+    padding:120px 60px;
+    transform:translateX(100%);
+    transition:transform .5s ease;
+    z-index:9999;
+}
+
+.menu a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    font-size:20px;
+    margin-bottom:40px;
+}
+
+.menu.open{
+    transform:translateX(0);
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:.4s ease;
+    z-index:9000;
+}
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+/* ================= タイトル ================= */
+
+.page-title{
+    margin:130px 0 80px 10%;
+    font-size:50px;
+    font-weight:500;
+}
+
+/* ================= レイアウト ================= */
+
+.contact-wrapper{
+    width:1000px;
+    margin:-50px auto 100px auto;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+}
+
+/* 左 */
+
+.left-area h2{
+    font-size:34px;
+    margin-top: 25px;
+    margin-left: 20px;
+}
+
+/* 右 */
+
+.right-area h3{
+    font-size:33px;
+    margin-bottom:10px;
+}
+
+.right-area p{
+    line-height:1.3;
+    font-size:16px;
+}
+
+/* ================= フォーム ================= */
+
+form{
+    margin-top:40px;
+}
+
+.form-row{
+    display:flex;
+    gap:20px;
+}
+
+input, textarea{
+    width:100%;
+    padding:16px;
+    margin-bottom:20px;
+    border:none;
+    border-radius:40px;
+    font-size:16px;
+}
+
+textarea{
+    height:100px;
+    resize:none;
+}
+
+/* ================= Sendボタン（ロゴと同じ仕様） ================= */
+
+button{
+    padding:10px 25px;
+    border:1px solid white;
+    border-radius:40px;
+    background:transparent;
+    color:white;
+    font-family:'Bespoke';
+    font-size:16px;
+    cursor:pointer;
+    transition:.3s ease;
+}
+
+button:hover{
+    background:white;
+    color:#290db7;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ロゴ -->
+<a href="../index.html" class="logo">Heavenward Submarine</a>
+
+<!-- メニュー -->
+<div class="menu-btn" onclick="toggleMenu()">≡</div>
+
+<div class="menu" id="menu">
+    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../gallery/gallery.html">Gallery</a>
+    <a href="../NewRelease/NewRelease.html">New Release</a>
+    <a href="../About/About.html">About</a>
+    <a href="../Contact/Contact.html">Contact</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<!-- タイトル -->
+<h1 class="page-title">Contact</h1>
+
+<div class="contact-wrapper">
+
+    <!-- 左 -->
+    <div class="left-area">
+        <h2>お問合せ</h2>
+    </div>
+
+    <!-- 右 -->
+    <div class="right-area">
+
+        <h3>Dear :</h3>
+
+        <p>
+        Thank you for your visiting!<br><br>
+        If you have any questions, suggestions, or collaboration opportunities,
+        please feel free to contact me.
+        </p>
+
+        <!-- フォーム -->
+        <form action="https://formspree.io/f/YOUR_ID" method="POST">
+
+            <div class="form-row">
+                <input type="text" name="first_name" placeholder="First name (required)" required>
+                <input type="text" name="last_name" placeholder="Last name (required)" required>
+            </div>
+
+            <input type="email" name="email" placeholder="メール (required)" required>
+
+            <textarea name="message" placeholder="Message" required></textarea>
+
+            <button type="submit">Send</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function toggleMenu(){
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+</script>
+
+</body>
+</html>

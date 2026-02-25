@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Downward is Heavenward</title>
+
+<style>
+
+/* ================= フォント ================= */
+
+@font-face{
+    font-family:'Bespoke';
+    src:url('../fonts/Bespoke-MjPdRlygxs.ttf');
+}
+
+/* ================= 全体 ================= */
+
+body{
+    margin:0;
+    background:#290db7;
+    padding-bottom:200px;
+    cursor:grab;
+}
+
+body.dragging{
+    cursor:grabbing;
+}
+
+/* ================= ナビ ================= */
+
+.logo{
+    position:fixed;
+    top:30px;
+    left:60px;
+    padding:10px 25px;
+    border:1px solid white;
+    border-radius:40px;
+    text-decoration:none;
+    color:white;
+    font-family:'Bespoke';
+    z-index:100;
+}
+
+/* ================= 横ギャラリー ================= */
+
+.horizontal-gallery{
+    position:absolute;
+    top:55%;
+    left:0;
+    transform:translateY(-50%);
+    display:flex;
+    gap:10px;
+    padding:0 20vw;
+    user-select:none;
+}
+
+.horizontal-gallery img{
+    width:800px;
+    height:520px;
+    object-fit:cover;
+    cursor:grab;
+    -webkit-user-drag:none;
+}
+
+/* ================= メニュー ================= */
+
+.menu-btn{
+    position:fixed;
+    top:10px;
+    right:50px;
+    font-size:40px;
+    cursor:pointer;
+    z-index:10000;
+    color:white;
+}
+
+.menu{
+    position:fixed;
+    top:0;
+    right:0;
+    width:150px;
+    height:100vh;
+    background:#290db7;
+    padding:120px 60px;
+    transform:translateX(100%);
+    transition:.5s ease;
+    z-index:9999;
+}
+
+.menu a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    font-size:20px;
+    margin-bottom:40px;
+    font-family:'Bespoke';
+}
+
+.menu.open{
+    transform:translateX(0);
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:.4s ease;
+    z-index:9000;
+}
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+/* ================= タイトル ================= */
+
+.project-title{
+    position:fixed;
+    bottom:40px;
+    left:60px;
+    color:white;
+    font-family:'Bespoke';
+    z-index:200;
+}
+
+.project-title h1{
+    margin:0;
+    font-size:40px;
+    font-weight:400;
+}
+
+.project-title p{
+    font-size:14px;
+    margin-top:10px;
+    line-height:1.6;
+}
+
+</style>
+</head>
+
+<body>
+
+<a href="../gallery/gallery.html" class="logo">Gallery</a>
+
+<div class="menu-btn" onclick="toggleMenu()">≡</div>
+
+<div class="menu" id="menu">
+    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../gallery/gallery.html">Gallery</a>
+    <a href="../NewRelease/NewRelease.html">New Release</a>
+    <a href="../About/About.html">About</a>
+    <a href="../Contact/Contact.html">Contact</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="horizontal-gallery">
+    <img src="images/サムネイル.jpg">
+    <img src="images/tatto-4.webp">
+    <img src="images/截屏2024-05-04 18.28.57.png">
+    <img src="images/截屏2024-05-04 18.29.12.png">
+    <img src="images/截屏2024-05-04 18.29.22.png">
+    <img src="images/截屏2024-05-04 18.29.30.png">
+</div>
+
+<div class="project-title">
+    <h1>Downward is Heavenward</h1>
+    <p>
+        2022, Tokyo, Japan.<br>
+        Inspiration from HUM band.
+         <p><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:<br>
+            {“A dusty sleep you took too soon,”:<br>
+           {“and you need watering if you are to bloom.}}<br>
+           </i></p>
+    </p>
+</div>
+
+<script>
+
+const galleries = document.querySelectorAll(".horizontal-gallery");
+
+let isDown = false;
+let startX = 0;
+let isDragging = false;
+
+let states = [];
+
+galleries.forEach((gallery,index)=>{
+    states[index] = {
+        current:0,
+        target:0
+    };
+});
+
+/* ===== ドラッグ ===== */
+
+document.addEventListener("mousedown", (e)=>{
+    isDown = true;
+    isDragging = false;
+    startX = e.clientX;
+    document.body.classList.add("dragging");
+});
+
+document.addEventListener("mouseup", ()=>{
+    isDown = false;
+    document.body.classList.remove("dragging");
+
+    // 少しでも動いたらクリック無効
+    setTimeout(()=>{ isDragging = false; }, 50);
+});
+
+document.addEventListener("mousemove", (e)=>{
+    if(!isDown) return;
+
+    const dx = e.clientX - startX;
+
+    if(Math.abs(dx) > 2){
+        isDragging = true;
+    }
+
+    startX = e.clientX;
+
+    galleries.forEach((gallery,index)=>{
+        states[index].target += dx;
+    });
+});
+
+/* ===== アニメーション ===== */
+
+function animate(){
+
+    galleries.forEach((gallery,index)=>{
+
+        const state = states[index];
+
+        state.current += (state.target - state.current) * 0.1;
+
+        const maxLeft = 0;
+        const maxRight = -(gallery.scrollWidth - window.innerWidth);
+
+        if(state.current > maxLeft) state.current = maxLeft;
+        if(state.current < maxRight) state.current = maxRight;
+
+        // ★ 中央固定を維持しつつ横移動
+        gallery.style.transform =
+            `translate(${state.current}px, -50%)`;
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+/* ===== クリック中央移動 ===== */
+
+galleries.forEach((gallery,index)=>{
+
+    gallery.querySelectorAll("img").forEach(img=>{
+
+        img.addEventListener("click",(e)=>{
+
+            if(isDragging) return; // ドラッグ中は無効
+
+            const rect = img.getBoundingClientRect();
+            const imgCenter = rect.left + rect.width / 2;
+            const screenCenter = window.innerWidth / 2;
+
+            states[index].target += screenCenter - imgCenter;
+        });
+
+    });
+
+});
+
+/* ===== メニュー ===== */
+
+function toggleMenu(){
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+</script>
+
+</body>
+</html>
