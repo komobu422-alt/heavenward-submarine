@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>About</title>
 
 <style>
@@ -27,6 +28,11 @@ body{
     color:white;
 }
 
+html, body, * {
+    cursor: none !important;
+}
+
+
 /* ================= ロゴ ================= */
 
 .logo{
@@ -39,6 +45,16 @@ body{
     text-decoration:none;
     color:white;
     z-index:100;
+    transition:0.3s ease; 
+    z-index: 10000;
+}
+.logo:hover{
+    color:#5400fd;           
+    border-color:#5400fd;    
+}
+.logo:active{
+    color:#5400fd;
+    border-color:#5400fd;
 }
 
 /* ================= メニュー ================= */
@@ -97,7 +113,7 @@ body{
 /* ================= タイトル ================= */
 
 .page-title{
-    margin:130px 0 60px 10%;
+    margin:130px 0 10px 10%;
     font-size:50px;
     font-weight:500;
 }
@@ -105,10 +121,10 @@ body{
 /* ================= Aboutレイアウト ================= */
 
 .about-wrapper{
-    width:1000px;
-    margin:0 auto 150px auto;
+    width:auto;
+    margin:50px 120px 50px 120px;
     display:grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 500px 1fr;
     gap:80px;
     align-items:start;
 }
@@ -131,7 +147,7 @@ body{
 
 .about-text{
     font-family:'GeorgiaCustom';
-    font-size:16.5px;
+    font-size:16px;
     line-height:1.6;
     text-align:justify;
     text-justify:inter-word;
@@ -143,14 +159,15 @@ body{
 .contact-box{
     margin-top:30px; /* ← 画像との距離 */
     border:1px solid white;
-    padding:8px 25px; 
+    padding:0px 28px; 
     border-radius:40px;
     font-family:'Bespoke';
 }
 
 .contact-box p{
-    margin:20px 0;
-    font-size:16px;
+    margin:15px 0;
+    font-size:14px;
+    line-height: 1.3;
 }
 
 .contact-box a{
@@ -158,6 +175,61 @@ body{
     text-decoration:underline;
 }
 
+/* ================= インスタリンク ================= */
+
+.link{
+    margin-left:0px;
+    text-decoration:none;
+    color:white;
+    transition:color 0.3s ease;
+}
+
+.link:hover{
+    color:#8c8c8c;
+}
+
+/* ================= スマホ最適化 ================= */
+
+@media screen and (max-width:768px){
+
+    /* タイトル */
+    .page-title{
+        font-size:32px;
+        margin:100px 0 20px 6%;
+    }
+
+    /* レイアウトを1カラムに */
+    .about-wrapper{
+        margin:40px 20px;
+        grid-template-columns:1fr;
+        gap:40px;
+    }
+
+    /* テキスト */
+    .about-text{
+        font-size:14px;
+        margin-top:0;
+    }
+
+    /* ロゴ調整 */
+    .logo{
+        left:20px;
+        top:20px;
+        padding:8px 18px;
+        font-size:14px;
+        white-space: nowrap;
+    }
+
+    /* メニュー幅調整 */
+    .menu{
+        width:40%;
+        padding:120px 40px;
+    }    
+    .menu-btn{
+        right:20px;
+    }
+
+}
 </style>
 </head>
 
@@ -191,21 +263,26 @@ body{
         <div class="contact-box">
             <p>
                 E-mail:<br>
-                <a href="mailto:huangmengwei1995@gmail.com">
+                <a href="mailto:huangmengwei1995@gmail.com"
+                class="link">
                 huangmengwei1995@gmail.com
                 </a>
             </p>
 
             <p>
                 Instagram:
-                <a href="https://www.instagram.com/ko.bezu?igsh=MTkxMmRwOXp1ZXVjcQ==" target="_blank">
-                ko.bezu
+                <a href="https://www.instagram.com/ko.bezu" 
+                target="_blank"
+                class="link">
+                @ko.bezu
                 </a>
             </p>
 
             <p>
                 SoundCloud:
-                <a href="https://on.soundcloud.com/xWbM72whrmbHc4YkvK" target="_blank">
+                <a href="https://on.soundcloud.com/xWbM72whrmbHc4YkvK" 
+                target="_blank"
+                class="link">
                 Ko
                 </a>
             </p>
@@ -233,6 +310,58 @@ function toggleMenu(){
     document.getElementById("menu").classList.toggle("open");
     document.getElementById("overlay").classList.toggle("show");
 }
+
+document.body.style.cursor = "none";
+document.documentElement.style.cursor = "none";
+  
+const cursor = document.createElement("div");
+cursor.innerHTML = "❄︎";
+cursor.style.color = "white";
+cursor.style.position = "fixed";
+cursor.style.pointerEvents = "none";
+cursor.style.fontSize = "50px";
+cursor.style.zIndex = "100000";
+cursor.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(cursor);
+
+document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+});
+</script>
+
+<script>
+document.addEventListener("click", e => {
+
+    const snow = document.createElement("div");
+    snow.innerHTML = "❄︎";
+    snow.style.color = "white";   // ← 追加
+    snow.style.position = "fixed";
+    snow.style.left = e.clientX + "px";
+    snow.style.top = e.clientY + "px";
+    snow.style.fontSize = "22px";
+    snow.style.pointerEvents = "none";
+    snow.style.zIndex = "99999";
+    snow.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(snow);
+
+    let rotation = 0;
+    let scale = 1;
+
+    const spin = setInterval(() => {
+        rotation += 5;
+        scale += 0.05;
+
+        snow.style.transform =
+            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
+    }, 16);
+
+    setTimeout(() => {
+        clearInterval(spin);
+        snow.remove();
+    }, 800);
+});
+
 </script>
 </body>
 </html>

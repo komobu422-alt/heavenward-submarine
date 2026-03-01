@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery</title>
+
+<style>
+
+/* ================= フォント ================= */
+
+@font-face{
+    font-family:'Bespoke';
+    src:url('../fonts/Bespoke-MjPdRlygxs.ttf');
+}
+
+@font-face{
+    font-family:'GeorgiaCustom';
+    src:url('../fonts/Courier New.ttf');
+}
+
+/* ================= 全体 ================= */
+
+body{
+    margin:0;
+    background:#290db7;
+    font-family:'Bespoke';
+    color:white;
+}
+html, body, * {
+    cursor: none !important;
+}
+
+/* ================= ロゴ ================= */
+
+.logo{
+    position:fixed;
+    top:30px;
+    left:60px;
+    padding:10px 25px;
+    border:1px solid white;
+    border-radius:40px;
+    text-decoration:none;
+    color:white;
+    z-index:100;
+    transition:0.3s ease; 
+    z-index: 10000;
+}
+.logo:hover{
+    color:#5400fd;           
+    border-color:#5400fd;    
+}
+.logo:active{
+    color:#5400fd;
+    border-color:#5400fd;
+}
+
+/* ================= メニュー ================= */
+
+.menu-btn{
+    position:fixed;
+    top:10px;
+    right:50px;
+    font-size:40px;
+    cursor:pointer;
+    z-index:10000;
+}
+
+.menu{
+    position:fixed;
+    top:0;
+    right:0px;
+    width:150px;
+    height:100vh;
+    background:#290db7;
+    padding:120px 60px;
+    transform:translateX(100%);
+    transition:transform .5s ease;
+
+    z-index: 9999;
+}
+
+.menu a{
+    display:block;
+    color:rgb(255, 255, 255);
+    text-decoration:none;
+    font-size:20px;
+    margin-bottom:40px;
+    font-family:'Bespoke';
+}
+
+.menu.open{
+    transform:translateX(0);
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .4s ease;
+    z-index:9000;
+}
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+
+/* ================= タイトル ================= */
+
+.page-title{
+    margin:130px 0 10px 10%;
+    font-size:50px;
+    font-weight:500;
+}
+
+/* ================= 本 ================= */
+
+.book-wrapper{
+    position:relative;
+    width:1000px;   /* ← 固定 */
+    margin:60px auto 120px auto;
+}
+
+.book-bg{
+    width:100%;
+    height: 680px;
+    display:block;
+}
+
+/* 本の中 */
+
+.book-inner{
+    position:absolute;
+
+    inset:30px;   /* ← 四周すべて30pxの余白 */
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    column-gap:80px;
+
+    font-family:'GeorgiaCustom';
+    color:#3b3b3b;
+}
+
+/* 共通テーマ行 */
+.theme-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    margin-bottom:3px;
+    border-bottom:0.8px solid #474747;
+    padding:5px 0;                /* 余白調整 */
+    margin-bottom:3px;            /* 間隔を縮める */
+    text-decoration:none;
+    color:#3b3b3b;
+    font-size:16px;
+    gap:10px;
+}
+
+/* タイトル＋副タイトルブロック */
+.text-block{
+    display:flex;
+    flex-direction:column;
+}
+
+/* 全タイトルにアンダーライン */
+.theme-title{
+    text-decoration:underline;
+}
+
+/* テーマタイトル hover */
+.theme-row:hover .theme-title{
+    color:#8c8c8c;   /* 少し浅いグレーに */
+    transition:0.3s ease;
+}
+
+
+/* 副タイトル */
+.subtitle{
+    font-size:12px;
+    margin-top:10px;
+    line-height:1.2;
+    color:#666;
+}
+
+/* サムネ共通 */
+.theme-row img{
+    width:150px;
+    height:105px;
+    margin:0px 0px 1px 0;
+    object-fit:cover;
+    transition:0.3s ease; 
+}
+.theme-row img:hover{
+    filter:brightness(60%);  /* ← 暗くする */
+}
+
+
+/* 左画像バージョン */
+.left-image{
+    flex-direction:row;
+}
+
+.right-image{
+    flex-direction:row;
+}
+
+.main-title-box{
+    background:#372902;
+    color:#fff;
+    padding:8px 10px;
+    display:inline-block;
+    margin-bottom:60px;
+}
+
+.main-title-box h1{
+    font-size:18px;
+    letter-spacing:1px;
+    margin:0;
+}
+
+/* 区切り線 */
+.section-line{
+    border:none;
+    border-top:0.8px solid #3e3e3e;
+    margin:-38px 0 5px 0;
+}
+
+/* FACEタイトルだけ特別 */
+
+
+.theme-row img.face-thumb{
+    width:410px !important;
+    height:180px !important;
+}
+
+
+/* ================= ページ送り ================= */
+
+.pagination{
+    text-align:center;
+    margin-top:1px;
+    font-family:'Bespoke';
+}
+
+.page-btn{
+    font-size:20px;
+    color: white;
+    cursor:pointer;
+    margin:0 50px;
+    text-decoration:none;
+}
+.page-btn:hover{
+    color:#8c8c8c;   /* 少し浅いグレーに */
+}
+.page-number{
+    font-size:12px;
+}
+
+.page-number{
+    font-size:12px;
+}
+
+@media screen and (max-width:768px){
+
+    .page-title{
+        font-size:32px;
+        margin:100px 0 10px 5%;
+    }
+
+    .book-inner{
+        inset:20px;       /* 余白を少し縮める */
+        column-gap:30px;  /* カラム間を狭める */
+    }
+
+    .face-thumb{
+        width:100% !important;
+        height:auto !important;
+    }
+
+    .logo{
+        left:20px;
+        top:20px;
+        padding:8px 18px;
+        font-size:14px;
+        white-space: nowrap;
+    }
+
+    .menu-btn{
+        right:20px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<a href="../index.html" class="logo">Heavenward Submarine</a>
+
+<div class="menu-btn" onclick="toggleMenu()">≡</div>
+
+<div class="menu" id="menu">
+    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../gallery/gallery.html">Gallery</a>
+    <a href="../NewRelease/NewRelease.html">New Release</a>
+    <a href="../About/About.html">About</a>
+    <a href="../Contact/Contact.html">Contact</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<h1 class="page-title">Gallery</h1>
+
+<div class="book-wrapper">
+
+    <img src="../gallery/images/book-bg.webp" class="book-bg">
+
+    <div class="book-inner">
+
+        <!-- 左ページ -->
+        <div>
+            
+            <div class="main-title-box">
+                 <h1>Collection Photography</h1>
+            </div>
+
+        <hr class="section-line">
+
+          <a href="../Live in The Wall/Live in The Wall.html" class="theme-row left-image">
+             <img src="../Live in The Wall/images/サムネイル.webp">
+             <div class="text-block">
+                 <span class="theme-title">"Live in The Wall"</span>
+                 <span class="subtitle"><p><i>My Master’s Graduation Collection</br>
+                    Bunka Fashion Graduate University (BFGU, 2021)</i><p></p>
+                 </span>
+             </div>
+            </a>
+
+            
+            <a href="../FACE book/FACE book.html" class="theme-row face-row">
+                <img src="../FACE book/images/サムネイル.webp" class="face-thumb">
+                <div class="text-block"></div>
+            </a>
+
+           
+            <a href="../Don’t say Goodnight/Don’t say Goodnight.html" class="theme-row left-imag">
+                <img src="../Don’t say Goodnight/images/サムネイル.webp">
+                <div class="text-block">
+                    <span class="theme-title">Don’t say Goodnight</span>
+                    <span class="subtitle"><p><i>Music is the key.</i><p></span>
+                </div>
+            </a>
+
+            <a href="../Ledmaynes SS25/Ledmaynes SS25.html" class="theme-row right-image">
+                <div class="text-block">
+                   <span class="theme-title">Ledmaynes SS25</span> 
+                    <span class="subtitle"><p><i>"recto verso"</i><p></span>
+                </div>
+                <img src="../Ledmaynes SS25/images/サムネイル.webp">
+            </a>
+
+        </div>
+
+        <!-- 右ページ -->
+        <div>
+
+            <a href="../Carols実験/Carols実験.html" class="theme-row right-image">
+               <div class="text-block">
+                 <span class="theme-title">Carols実験</span>
+               </div>
+               <img src="../Carols実験/images/サムネイル.webp">
+           </a>
+
+            <a href="../HangZhou Portrait/HangZhou Portrait.html" class="theme-row left-image">
+              <img src="../HangZhou Portrait/images/サムネイル.webp">
+              <div class="text-block">
+                  <span class="theme-title">HangZhou Portrait</span>
+                  <span class="subtitle"><p><i>Always on journey with my friend.</i><p></span>
+              </div>
+           </a>
+
+            <a href="../Red/Red.html" class="theme-row right-image">
+               <div class="text-block">
+                  <span class="theme-title">Red</span>
+              </div>
+              <img src="../Red/images/サムネイル.webp">
+           </a>
+
+           <a href="../Downward is Heavenward/Downward is Heavenward.html" class="theme-row left-image">
+              <img src="../Downward is Heavenward/images/サムネイル.webp">
+              <div class="text-block">
+                 <span class="theme-title">*Downward is Heavenward*</span>
+                 <span class="subtitle"><p><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:</br>
+                    {“A dusty sleep you took too soon,”:</br>
+                    {“and you need watering if you are to bloom.}}</i><p></p></span>
+              </div>
+           </a>
+
+           <a href="../Go for Your Guns/Go for Your Guns.html" class="theme-row right-image">
+              <div class="text-block">
+                 <span class="theme-title">Go for Your Guns</span>
+             </div>
+             <img src="../Go for Your Guns/images/サムネイル.webp">
+           </a>
+
+        </div>
+
+    </div>
+
+    <div class="pagination">
+         <a href="gallery.html" class="page-btn">«</a>
+         <span class="page-number">2 / 2</span>
+         <span class="page-btn">»</span>
+    </div>
+
+    
+</div>
+
+
+
+<script>
+
+function toggleMenu(){
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+document.body.style.cursor = "none";
+document.documentElement.style.cursor = "none";
+  
+const cursor = document.createElement("div");
+cursor.innerHTML = "❄︎";
+cursor.style.color = "white";
+cursor.style.position = "fixed";
+cursor.style.pointerEvents = "none";
+cursor.style.fontSize = "50px";
+cursor.style.zIndex = "100000";
+cursor.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(cursor);
+
+document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+});
+
+document.addEventListener("click", e => {
+
+    const snow = document.createElement("div");
+    snow.innerHTML = "❄︎";
+    snow.style.color = "white";   // ← 追加
+    snow.style.position = "fixed";
+    snow.style.left = e.clientX + "px";
+    snow.style.top = e.clientY + "px";
+    snow.style.fontSize = "22px";
+    snow.style.pointerEvents = "none";
+    snow.style.zIndex = "99999";
+    snow.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(snow);
+
+    let rotation = 0;
+    let scale = 1;
+
+    const spin = setInterval(() => {
+        rotation += 5;
+        scale += 0.05;
+
+        snow.style.transform =
+            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
+    }, 16);
+
+    setTimeout(() => {
+        clearInterval(spin);
+        snow.remove();
+    }, 800);
+});
+
+</script>
+
+</body>
+</html>

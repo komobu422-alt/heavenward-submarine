@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live in The Wall</title>
+
+<style>
+
+/* ================= フォント ================= */
+
+@font-face{
+    font-family:'Bespoke';
+    src:url('../fonts/Bespoke-MjPdRlygxs.ttf');
+}
+
+@font-face{
+    font-family:'GeorgiaCustom';
+    src:url('../fonts/Courier New.ttf');
+}
+
+/* ================= 全体 ================= */
+
+body{
+    margin:0;
+    background:#290db7;
+    font-family:'Bespoke';
+    color:white;
+}
+html, body, * {
+    cursor: none !important;
+}
+
+/* ================= ロゴ ================= */
+
+.logo{
+    position:fixed;
+    top:30px;
+    left:60px;
+    padding:10px 25px;
+    border:1px solid white;
+    border-radius:40px;
+    text-decoration:none;
+    color:white;
+    z-index:100;
+    transition:0.3s ease; 
+    z-index: 10000;
+}
+.logo:hover{
+    color:#5400fd;           
+    border-color:#5400fd;    
+}
+.logo:active{
+    color:#5400fd;
+    border-color:#5400fd;
+}
+
+/* ================= メニュー ================= */
+
+.menu-btn{
+    position:fixed;
+    top:10px;
+    right:50px;
+    font-size:40px;
+    cursor:pointer;
+    z-index:10000;
+    color:white;
+}
+
+.menu{
+    position:fixed;
+    top:0;
+    right:0;
+    width:150px;
+    height:100vh;
+    background:#290db7;
+    padding:120px 60px;
+    transform:translateX(100%);
+    transition:transform .5s ease;
+    z-index:9999;
+}
+
+.menu a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    font-size:20px;
+    margin-bottom:40px;
+}
+
+.menu.open{
+    transform:translateX(0);
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .4s ease;
+    z-index:9000;
+}
+
+.overlay.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+/* ================= タイトル ================= */
+
+.page-title{
+    margin:130px 0 10px 10%;
+    font-size:50px;
+    font-weight:500;
+}
+
+/* サブタイトル */
+
+.sub-title{
+    margin:0 0 0px 10%;
+    font-size:15px;
+    font-weight:300;
+    opacity:0.8;
+    line-height: 0.5;
+}
+
+/* ================= PDF ================= */
+
+.pdf-wrapper{
+    width:auto;
+    margin:50px 120px 50px 120px;
+    display:grid;
+    grid-template-columns: 450px 1fr;
+    gap:80px;
+    align-items:start;
+}
+
+/* 左カラム */
+
+.left-column{
+    display:flex;
+    flex-direction:column;
+}
+
+/* 画像 */
+
+.pdf-bg{
+    height:260px;
+    width:100%;
+    display:block;
+    border:none;
+    transition:0.3s ease; 
+}
+.pdf-bg:hover{
+    filter:brightness(70%);  /* ← 暗くする */
+}
+
+.pdf-link {
+    text-decoration: underline; /* アンダーライン */
+    color: inherit;             /* 親の文字色を引き継ぐ */
+    transition: color 0.3s;     /* 色変化を滑らかに */
+}
+
+.pdf-link:hover {
+    color: #8c8c8c;             /* ホバー時の色 */
+}
+
+/* 右テキスト */
+
+.detail-text{
+    font-family:'GeorgiaCustom';
+    font-size:12px;
+    line-height:1.4;
+    text-align:justify;
+    margin-top:-14px;
+}
+
+.detail-text p{
+    margin:10px 0;
+}
+
+/* ================= 詳細 ================= */
+
+.add-info{
+    margin-top:5px; /* ← 画像との距離 */
+    line-height:0.5;
+    padding:0px 0px; 
+    font-family:'Bespoke';
+}
+
+.add-info p{
+    margin:12px 0;
+    font-size:12px;
+}
+
+.add-info a{
+    color:rgb(199, 199, 199);
+    text-decoration:underline;
+}
+
+/* ================= スマホ最適化 ================= */
+
+@media screen and (max-width:768px){
+
+    /* 余白調整 */
+    body{
+        padding-bottom:80px;
+    }
+
+    /* ロゴ */
+    .logo{
+        top:20px;
+        left:20px;
+        padding:8px 18px;
+        font-size:14px;
+        white-space: nowrap;
+    }
+
+    /* メニューボタン */
+    .menu-btn{
+        right:20px;
+        font-size:32px;
+    }
+
+    /* メニュー幅調整 */
+    .menu{
+        width:40%;
+        padding:120px 40px;
+    }
+
+    /* タイトル */
+    .page-title{
+        margin:120px 20px 10px 20px;
+        font-size:32px;
+    }
+
+    .sub-title{
+        margin:15px 0 0 21px;
+        font-size:10px;
+        line-height:0.1
+    }
+
+    /* レイアウトを縦並びに変更 */
+    .pdf-wrapper{
+        display:block;
+        margin:30px 20px;
+    }
+
+    /* 画像を横いっぱいに */
+    .pdf-bg{
+        width:100%;
+        height:auto;
+    }
+
+    /* 追加情報 */
+    .add-info{
+        margin-top:5px;
+        line-height:0.5;
+    }
+
+    .add-info p{
+        font-size:10px;
+    }
+
+    /* テキスト */
+    .detail-text{
+        margin-top:40px;
+        font-size:13px;
+        line-height:1.7;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<a href="../gallery/gallery.html" class="logo">Gallery</a>
+
+<div class="menu-btn" onclick="toggleMenu()">≡</div>
+
+<div class="menu" id="menu">
+    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../gallery/gallery.html">Gallery</a>
+    <a href="../NewRelease/NewRelease.html">New Release</a>
+    <a href="../About/About.html">About</a>
+    <a href="../Contact/Contact.html">Contact</a>
+</div>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<h1 class="page-title">"Live in The Wall"</h1>
+<h2 class="sub-title"><p><i>Master’s Graduation Collection</i></h2>
+<h3 class="sub-title"><p><i>Fashion Design course, Bunka Fashion Graduate University</i></h3>
+
+<div class="pdf-wrapper">
+
+<!-- 左カラム -->
+<div class="left-column">
+    <div class="pdf-image">
+        <a href="images/Live-in-The-Wall.pdf" target="_blank">
+            <img src="images/サムネイル.webp" class="pdf-bg" alt="Portfolio Thumbnail">
+        </a>
+    </div>
+
+    <div class="add-info">
+        <p><i>2021, Tokyo</i></p>
+
+        <!-- アンダーライン付きテキストリンク -->
+        <p>
+            <i>
+                <a href="images/Live-in-The-Wall.pdf" target="_blank" class="pdf-link">
+                    ⬆︎ Click the image to explore the full portfolio ⬆︎
+                </a>
+            </i>
+        </p>
+        <br><br>
+
+        <p><i><b>Credit:</b></i></p>
+        <p><i>Design/Styling: @ko.bezu</i></p>
+        <p><i>Makeup/Hair: @eri.matsumura</i></p>
+        <p><i>Model: @mi_youkun & Inge Murata @alphatokyomodel</i></p>
+        <p><i>Photo: @ko.bezu</i></p>
+        <p><i>Assistant: @amber_1311</i></p>
+    </div>
+</div>
+
+    <!-- 右カラム -->
+    <div class="detail-text">
+        <p><b>文化ファッション大学院（BFGU）
+            デザイン専攻 修士課程修了制作 2021</b><br><br>
+        <p>本コレクションは、ベルリンの壁をインスピレーション源に、分断と再生という歴史的背景からコンセプトを構築した。当時の社会情勢や壁に残された痕跡による緊張感とエネルギーを、色味のある手描きプリントとして表現。グラフィカルでありながら感情を内包するテキスタイルデザインに挑戦した。</p></p>
+        プリント手法においては、精密な画像表現にはディジタルプリントが必要だけれど、革生地が高温プレスに適さない特性を踏まえ、シルクスクリーンのやり方で染料を厚く塗布した部分を断熱層として機能させながら、プレス機の温度を細かく調整し幾度もの試行錯誤を経て、染料の上にディジタルプリントを加える事を実現。また、壁の質感を衣服上に再現するため厚塗りの発泡プリント技法を用い、物質的なテクスチャーを強調した。</p>
+        また、建築家Valentine Schlegelの無地の壁のような彫刻的な造形に影響を受け、衣服のシルエット構成とパターンメイキングにおいて実験を重ねた。空間と身体の関係性を再解釈し、構築的でありながらミニマリズムなシルエットを追求。</p>
+        最終的に、プリントをミニマルなフォルムに重ねた10体のルックを完成させ、コンセプトからテキスタイル、パターン設計まで一貫して表現したLook Bookとしてまとめた。<br><br>
+
+        <b>❄︎ ❄︎ ❄︎</b><br><br>
+
+        <p><b>Master’s Graduation Collection</b></p>
+        <b>Fashion Design course, Bunka Fashion Graduate University</b><br><br>
+
+        This collection draws from the historical context of the Berlin Wall, exploring themes of division and reconstruction. Research into its political and social climate informed the development of colorful hand made textile prints, translating the wall’s emotional intensity and visual traces into graphic expressions.</p>
+        Due to the nature of leather, which cannot endure high temperature pressing, the printing process required technical experimentation beyond conventional silk screen methods. Thick layers of dye were applied to act partially as insulation, while heat levels were carefully adjusted through repeated trials. Foam printing was additionally used to recreate the tactile texture of a wall on the garments.</p>
+        Silhouette and pattern development were influenced by the plain, wall-like sculptural forms in the architectural works of Valentine Schlegel (1925-2021). Expressive prints were layered onto minimalist silhouettes, balancing architectural structure with visual restraint.</p>
+        The project culminated in a lookbook of 10 complete looks, integrating concept, textile creation, full process design, final art direction and photography.
+        </p>
+    </div>
+
+</div>
+
+
+<script>
+function toggleMenu(){
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+document.body.style.cursor = "none";
+document.documentElement.style.cursor = "none";
+  
+const cursor = document.createElement("div");
+cursor.innerHTML = "❄︎";
+cursor.style.color = "white";
+cursor.style.position = "fixed";
+cursor.style.pointerEvents = "none";
+cursor.style.fontSize = "50px";
+cursor.style.zIndex = "100000";
+cursor.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(cursor);
+
+document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+});
+
+document.addEventListener("click", e => {
+
+    const snow = document.createElement("div");
+    snow.innerHTML = "❄︎";
+    snow.style.color = "white";   // ← 追加
+    snow.style.position = "fixed";
+    snow.style.left = e.clientX + "px";
+    snow.style.top = e.clientY + "px";
+    snow.style.fontSize = "22px";
+    snow.style.pointerEvents = "none";
+    snow.style.zIndex = "99999";
+    snow.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(snow);
+
+    let rotation = 0;
+    let scale = 1;
+
+    const spin = setInterval(() => {
+        rotation += 5;
+        scale += 0.05;
+
+        snow.style.transform =
+            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
+    }, 16);
+
+    setTimeout(() => {
+        clearInterval(spin);
+        snow.remove();
+    }, 800);
+});
+
+</script>
+
+</body>
+</html>

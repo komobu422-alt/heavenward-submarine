@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>New Release</title>
 
 <style>
@@ -26,6 +27,9 @@ body{
     font-family:'Bespoke';
     color:white;
 }
+html, body, * {
+    cursor: none !important;
+}
 
 /* ================= ロゴ ================= */
 
@@ -39,6 +43,16 @@ body{
     text-decoration:none;
     color:white;
     z-index:100;
+    transition:0.3s ease; 
+    z-index: 10000;
+}
+.logo:hover{
+    color:#5400fd;           
+    border-color:#5400fd;    
+}
+.logo:active{
+    color:#5400fd;
+    border-color:#5400fd;
 }
 
 /* ================= メニュー ================= */
@@ -96,8 +110,8 @@ body{
 /* ================= タイトル ================= */
 
 .page-title{
-    margin:120px 0 10px 10%;
-    font-size:55px;
+    margin:130px 0 10px 10%;
+    font-size:50px;
     font-weight:500;
 }
 
@@ -105,7 +119,7 @@ body{
 
 .sub-title{
     margin:0 0 40px 10%;
-    font-size:22px;
+    font-size:17px;
     font-weight:300;
     opacity:0.8;
 }
@@ -114,12 +128,67 @@ body{
 
 .video-wrapper{
     width:300px;
-    margin:0 auto 0px 120px;
+    margin:50px 120px 50px 120px;
 }
 
 .video-bg{
     width:80%;
     display:block;
+}
+
+/* ================= スマホ最適化 ================= */
+
+@media screen and (max-width:768px){
+
+    /* 余白 */
+    body{
+        padding-bottom:80px;
+    }
+
+    /* ロゴ */
+    .logo{
+        top:20px;
+        left:20px;
+        padding:8px 18px;
+        font-size:14px;
+        white-space: nowrap;
+    }
+
+    /* メニュー幅調整 */
+    .menu{
+        width:40%;
+        padding:120px 40px;
+    }    
+    .menu-btn{
+        right:20px;
+        font-size:32px;
+    }
+
+    /* タイトル */
+    .page-title{
+        margin:120px 20px 10px 20px;
+        font-size:32px;
+    }
+
+    .sub-title{
+        margin:0 20px 30px 20px;
+        font-size:14px;
+    }
+
+    /* 動画を画面いっぱいに */
+    .video-wrapper{
+        width:80%;
+        margin:10px 0;
+        padding:0 20px;
+        box-sizing:border-box;
+    }
+
+    .video-bg{
+        width:80%;
+        height:auto;
+        display:block;
+    }
+
 }
 
 </style>
@@ -157,6 +226,56 @@ function toggleMenu(){
     document.getElementById("menu").classList.toggle("open");
     document.getElementById("overlay").classList.toggle("show");
 }
+
+document.body.style.cursor = "none";
+document.documentElement.style.cursor = "none";
+  
+const cursor = document.createElement("div");
+cursor.innerHTML = "❄︎";
+cursor.style.color = "white";
+cursor.style.position = "fixed";
+cursor.style.pointerEvents = "none";
+cursor.style.fontSize = "50px";
+cursor.style.zIndex = "100000";
+cursor.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(cursor);
+
+document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+});
+
+document.addEventListener("click", e => {
+
+    const snow = document.createElement("div");
+    snow.innerHTML = "❄︎";
+    snow.style.color = "white";   // ← 追加
+    snow.style.position = "fixed";
+    snow.style.left = e.clientX + "px";
+    snow.style.top = e.clientY + "px";
+    snow.style.fontSize = "22px";
+    snow.style.pointerEvents = "none";
+    snow.style.zIndex = "99999";
+    snow.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(snow);
+
+    let rotation = 0;
+    let scale = 1;
+
+    const spin = setInterval(() => {
+        rotation += 5;
+        scale += 0.05;
+
+        snow.style.transform =
+            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
+    }, 16);
+
+    setTimeout(() => {
+        clearInterval(spin);
+        snow.remove();
+    }, 800);
+});
+
 </script>
 
 </body>

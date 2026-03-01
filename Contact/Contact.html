@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contact</title>
 
 <style>
@@ -20,7 +21,12 @@ body{
     background:#290db7;
     font-family:'Bespoke';
     color:white;
+    cursor: none; /* 元カーソル非表示 */
 }
+html, body, * {
+    cursor: none !important;
+}
+
 
 /* ================= ロゴ ================= */
 
@@ -34,6 +40,16 @@ body{
     text-decoration:none;
     color:white;
     z-index:100;
+    transition:0.3s ease; 
+    z-index: 10000;
+}
+.logo:hover{
+    color:#5400fd;           
+    border-color:#5400fd;    
+}
+.logo:active{
+    color:#5400fd;
+    border-color:#5400fd;
 }
 
 /* ================= メニュー ================= */
@@ -91,16 +107,16 @@ body{
 /* ================= タイトル ================= */
 
 .page-title{
-    margin:120px 0 10px 10%;
-    font-size:55px;
+    margin:130px 0 10px 10%;
+    font-size:50px;
     font-weight:500;
 }
 
 /* サブタイトル */
 
 .sub-title{
-    margin:0 0 40px 10%;
-    font-size:22px;
+    margin:0 0 0px 10%;
+    font-size:17px;
     font-weight:300;
     opacity:0.8;
 }
@@ -109,7 +125,7 @@ body{
 
 .contact-wrapper{
     width:1000px;
-    margin:-50px auto 100px auto;
+    margin:0px auto 100px auto;
     display:grid;
     grid-template-columns: 1fr 1fr;
     gap:10px;
@@ -179,6 +195,89 @@ button:hover{
     color:#290db7;
 }
 
+/* すべての要素のカーソルを消す */
+*{
+    cursor: none !important;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+/* ================= スマホ最適化 ================= */
+
+@media screen and (max-width:768px){
+
+    /* タイトル */
+    .page-title{
+        font-size:32px;
+        margin:100px 0 5px 6%;
+    }
+
+    .sub-title{
+        margin:0 0 20px 6%;
+        font-size:14px;
+    }
+
+    /* レイアウトを1カラムに */
+    .contact-wrapper{
+        width:90%;
+        margin:0 0px 80px 5px;
+        padding:20px 20px;
+        box-sizing:border-box;
+        grid-template-columns:1fr;
+        gap:0px;
+    }
+
+    /* 左の雪エリア中央に */
+    .left-area{
+        text-align:center;
+    }
+
+    .left-area h2{
+        margin:0;
+        font-size:28px;
+    }
+
+    /* 右 */
+    .right-area h3{
+        font-size:24px;
+    }
+
+    .right-area p{
+        font-size:14px;
+    }
+
+    /* フォーム */
+    .form-row{
+        flex-direction:column; /* 横並び→縦 */
+        gap:0;
+    }
+
+    input, textarea{
+        padding:14px;
+        font-size:14px;
+    }
+
+    /* ロゴ位置 */
+    .logo{
+        left:20px;
+        top:20px;
+        padding:8px 18px;
+        font-size:14px;
+        white-space: nowrap;
+    }
+
+    /* メニュー幅調整 */
+    .menu{
+        width:40%;
+        padding:120px 40px;
+    }    
+    .menu-btn{
+        right:20px;
+        font-size:32px;
+    }
+}
 </style>
 </head>
 
@@ -250,6 +349,57 @@ function toggleMenu(){
     document.getElementById("overlay").classList.toggle("show");
 }
 </script>
+
+<script>
+const cursor = document.createElement("div");
+cursor.innerHTML = "❄︎";
+cursor.style.position = "fixed";
+cursor.style.pointerEvents = "none";
+cursor.style.fontSize = "50px";
+cursor.style.zIndex = "100000";
+cursor.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(cursor);
+
+document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+});
+</script>
+
+<script>
+document.addEventListener("click", e => {
+
+    const snow = document.createElement("div");
+    snow.innerHTML = "❄︎";
+    snow.style.position = "fixed";
+    snow.style.left = e.clientX + "px";
+    snow.style.top = e.clientY + "px";
+    snow.style.fontSize = "22px";
+    snow.style.pointerEvents = "none";
+    snow.style.zIndex = "99999";
+    snow.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(snow);
+
+    let rotation = 0;
+    let scale = 1;
+
+    const spin = setInterval(() => {
+        rotation += 5;
+        scale += 0.05;
+
+        snow.style.transform =
+            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
+
+    }, 16);
+
+    // 0.8秒後に消す
+    setTimeout(() => {
+        clearInterval(spin);
+        snow.remove();
+    }, 800);
+});
+</script>
+
 
 </body>
 </html>

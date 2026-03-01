@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carols実験</title>
 
 <style>
@@ -25,8 +26,12 @@ body{
 body.dragging{
     cursor:grabbing;
 }
+html, body, * {
+    cursor: none !important;
+}
 
-/* ================= ナビ ================= */
+
+/* ================= ロゴ ================= */
 
 .logo{
     position:fixed;
@@ -39,6 +44,16 @@ body.dragging{
     color:white;
     font-family:'Bespoke';
     z-index:100;
+    transition:0.3s ease; 
+    z-index: 10000;
+}
+.logo:hover{
+    color:#5400fd;           
+    border-color:#5400fd;    
+}
+.logo:active{
+    color:#5400fd;
+    border-color:#5400fd;
 }
 
 /* ================= 横ギャラリー ================= */
@@ -135,7 +150,62 @@ body.dragging{
 .project-title p{
     font-size:14px;
     margin-top:10px;
-    line-height:1.6;
+    line-height:1.4;
+}
+
+/* ================= スマホ最適化 ================= */
+
+@media screen and (max-width:768px){
+
+    body{
+        padding-bottom:120px;
+    }
+
+    /* ロゴ位置 */
+    .logo{
+        left:20px;
+        top:20px;
+        padding:8px 18px;
+        font-size:14px;
+    }
+
+    /* メニュー幅調整 */
+    .menu{
+        width:40%;
+        padding:120px 40px;
+    }    
+    .menu-btn{
+        right:20px;
+        font-size:32px;
+    }
+
+    /* 横ギャラリーを通常スクロールに */
+    .horizontal-gallery{
+        position:relative;
+        top:auto;
+        left:auto;
+        transform:none !important;
+        overflow-x:auto;
+        padding:120px 20px 40px 120px;
+        gap:15px;
+    }
+
+    /* タイトルを固定解除 */
+    .project-title{
+        position:relative;
+        bottom:auto;
+        left:auto;
+        margin:-110px 20px
+    }
+
+    .project-title h1{
+        font-size:26px;
+    }
+
+    .project-title p{
+        font-size:11px;
+    }
+
 }
 
 </style>
@@ -249,9 +319,11 @@ function animate(){
     });
 
     requestAnimationFrame(animate);
+    
 }
 
 animate();
+
 
 /* ===== クリック中央移動 ===== */
 
@@ -274,12 +346,83 @@ galleries.forEach((gallery,index)=>{
 
 });
 
+window.addEventListener("resize", () => {
+
+    galleries.forEach((gallery, index) => {
+
+        const state = states[index];
+
+        const maxLeft = 0;
+        const maxRight = -(gallery.scrollWidth - window.innerWidth);
+
+        if(state.target > maxLeft) state.target = maxLeft;
+        if(state.target < maxRight) state.target = maxRight;
+
+        if(state.current > maxLeft) state.current = maxLeft;
+        if(state.current < maxRight) state.current = maxRight;
+
+    });
+
+});
+
 /* ===== メニュー ===== */
 
 function toggleMenu(){
     document.getElementById("menu").classList.toggle("open");
     document.getElementById("overlay").classList.toggle("show");
 }
+
+document.body.style.cursor = "none";
+document.documentElement.style.cursor = "none";
+  
+const cursor = document.createElement("div");
+cursor.innerHTML = "❄︎";
+cursor.style.color = "white";
+cursor.style.position = "fixed";
+cursor.style.pointerEvents = "none";
+cursor.style.fontSize = "50px";
+cursor.style.zIndex = "100000";
+cursor.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(cursor);
+
+document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
+});
+</script>
+
+<script>
+document.addEventListener("click", e => {
+
+    const snow = document.createElement("div");
+    snow.innerHTML = "❄︎";
+    snow.style.color = "white";   // ← 追加
+    snow.style.position = "fixed";
+    snow.style.left = e.clientX + "px";
+    snow.style.top = e.clientY + "px";
+    snow.style.fontSize = "22px";
+    snow.style.pointerEvents = "none";
+    snow.style.zIndex = "99999";
+    snow.style.transform = "translate(-50%, -50%)";
+    document.body.appendChild(snow);
+
+    let rotation = 0;
+    let scale = 1;
+
+    const spin = setInterval(() => {
+        rotation += 5;
+        scale += 0.05;
+
+        snow.style.transform =
+            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
+    }, 16);
+
+    setTimeout(() => {
+        clearInterval(spin);
+        snow.remove();
+    }, 800);
+});
+
 
 </script>
 
