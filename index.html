@@ -6,84 +6,107 @@
 <title>Heavenward Submarine</title>
 
 <style>
-  @font-face {
+@font-face {
     font-family: 'Bespoke';
     src: url('fonts/Bespoke-MjPdRlygxs.ttf') format('truetype');
 }
 
-body{
-    margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background: #290db7;
-    font-family: 'Bespoke',sans-serif;
-
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Bespoke', sans-serif;
     cursor: none;
+    position: relative;
+    overflow: hidden;
 }
 
-html, body, * {
-    cursor: none !important;
+/* リンク装飾 */
+a {
+    text-decoration: none;
 }
 
-a{
-    text-decoration:none;
+/* メインボタン */
+.gallery-button {
+    color: white;
+    font-size: 28px;
+    letter-spacing: 4px;
+    border: 1px solid white;
+    padding: 13px 50px;
+    transition: 0.4s;
+    border-radius: 40px;
+    position: relative;
+    z-index: 10;
+    white-space: nowrap;
+    display: inline-block;
 }
 
-.gallery-button{
-    color:white;
-    font-size:30px;
-    letter-spacing:4px;
-    border:1px solid white;
-    padding:15px 40px;
-    transition:0.4s;
-    border-radius:40px;
+.gallery-button:hover,
+.gallery-button:active {
+    background: white;
+    color: rgb(4,0,219);
 }
 
-.gallery-button:hover{
-    background:white;
-    color:rgb(4,0,219);
-}
-.gallery-button:active{
-    background:white;
-    color:rgb(4,0,219);
+/* 背景動画 */
+#bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    pointer-events: none;
 }
 
 /* ================= スマホ最適化 ================= */
-
 @media screen and (max-width:768px){
 
     body{
         padding:0 20px;
         text-align:center;
+        background: #290db7;
     }
 
     .gallery-button{
         font-size:14px;
         letter-spacing:2px;
         padding:12px 20px;
-        width:100%;
+        width:80%;
         max-width:320px;
         box-sizing:border-box;
+        white-space: nowrap;
     }
 
+    #bg-video{
+        display:none;
+    }
 }
+
 </style>
 </head>
 
 <body>
 
-<a href="gallery/gallery.html">
-    <div class="gallery-button">Heavenward Submarine</div>
+<!-- 背景動画 -->
+<video id="bg-video"
+       autoplay
+       muted
+       loop
+       playsinline>
+    <source src="../NewRelease/images/距離感-HP.mp4" type="video/mp4">
+</video>
+
+<!-- コンテンツ -->
+<a href="gallery/gallery.html" class="gallery-button">
+    Heavenward Submarine
 </a>
 
-
 <script>
-  
-document.body.style.cursor = "none";
-document.documentElement.style.cursor = "none";
-  
+
+/* カスタムカーソル */
 const cursor = document.createElement("div");
 cursor.innerHTML = "❄︎";
 cursor.style.color = "white";
@@ -99,12 +122,11 @@ document.addEventListener("mousemove", e => {
     cursor.style.top = e.clientY + "px";
 });
 
-
+/* クリック時 360度回転 */
 document.addEventListener("click", e => {
-
     const snow = document.createElement("div");
     snow.innerHTML = "❄︎";
-    snow.style.color = "white";   // ← 追加
+    snow.style.color = "white";
     snow.style.position = "fixed";
     snow.style.left = e.clientX + "px";
     snow.style.top = e.clientY + "px";
@@ -118,9 +140,8 @@ document.addEventListener("click", e => {
     let scale = 1;
 
     const spin = setInterval(() => {
-        rotation += 5;
+        rotation += 8;
         scale += 0.05;
-
         snow.style.transform =
             "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
     }, 16);
@@ -130,6 +151,7 @@ document.addEventListener("click", e => {
         snow.remove();
     }, 800);
 });
+
 </script>
 
 </body>

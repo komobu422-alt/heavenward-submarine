@@ -62,7 +62,7 @@ html, body, * {
     position:relative;
     display:flex;
     gap:10px;
-    padding:170px 20vw 0 20vw;
+    padding:170px 20vw 0 120px;
     user-select:none;
 }
 
@@ -441,7 +441,7 @@ document.addEventListener("click", e => {
     let scale = 1;
 
     const spin = setInterval(() => {
-        rotation += 5;
+        rotation += 8;
         scale += 0.05;
 
         snow.style.transform =
