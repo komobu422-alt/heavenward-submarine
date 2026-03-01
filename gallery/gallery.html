@@ -64,6 +64,13 @@ html, body, * {
     font-size:40px;
     cursor:pointer;
     z-index:10000;
+    color:white;
+    transition: 0.3s ease;
+}
+
+.menu-btn:hover {
+    color: rgba(255,255,255,0.4);
+    transform: scale(0.98);
 }
 
 .menu{
@@ -87,6 +94,11 @@ html, body, * {
     font-size:20px;
     margin-bottom:40px;
     font-family:'Bespoke';
+    transition: 0.3s ease;
+}
+.menu a:hover {
+    color: rgba(255,255,255,0.4);
+    transform: scale(0.98);
 }
 
 .menu.open{
@@ -178,6 +190,7 @@ html, body, * {
 /* テーマタイトル hover */
 .theme-row:hover .theme-title{
     color:#8c8c8c;   /* 少し浅いグレーに */
+    transform: scale(0.98);
 }
 
 
@@ -199,6 +212,7 @@ html, body, * {
 }
 .theme-row img:hover{
     filter:brightness(60%);  /* ← 暗くする */
+    transform: scale(0.98);
 }
 
 
@@ -259,6 +273,7 @@ html, body, * {
 }
 .page-btn:hover{
     color:#8c8c8c;   /* 少し浅いグレーに */
+    transform: scale(0.98);
 }
 .page-number{
     font-size:12px;

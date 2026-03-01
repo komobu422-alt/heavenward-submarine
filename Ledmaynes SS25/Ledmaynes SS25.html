@@ -62,7 +62,7 @@ html, body, * {
     position:relative;
     display:flex;
     gap:10px;
-    padding:170px 20vw 0 120px;
+    padding:170px 20vw 0 20vw;
     user-select:none;
 }
 
@@ -110,6 +110,11 @@ html, body, * {
     font-size:20px;
     margin-bottom:40px;
     font-family:'Bespoke';
+    transition: 0.3s ease;
+}
+.menu a:hover {
+    color: rgba(255,255,255,0.4);
+    transform: scale(0.98);
 }
 
 .menu.open{
