@@ -3,7 +3,7 @@
 <head><link rel="icon" type="image/png" href="/favicon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Downward is Heavenward</title>
+<title>FACE book</title>
 
 <style>
 
@@ -19,14 +19,13 @@
 body{
     margin:0;
     background:#290db7;
-    padding-bottom:200px;
+    padding-bottom: 200px;
     cursor:grab;
 }
 
 body.dragging{
     cursor:grabbing;
 }
-
 html, body, * {
     cursor: none !important;
 }
@@ -43,6 +42,7 @@ html, body, * {
     text-decoration:none;
     color:white;
     font-family:'Bespoke';
+    z-index:100;
     transition:0.3s ease; 
     z-index: 10000;
 }
@@ -58,18 +58,19 @@ html, body, * {
 /* ================= 横ギャラリー ================= */
 
 .horizontal-gallery{
-    position:absolute;
-    top:55%;
-    left:0;
-    transform:translateY(-50%);
+    position:relative;
     display:flex;
     gap:10px;
-    padding:0 20vw;
+    padding:170px 20vw 0 20vw;
     user-select:none;
 }
 
+.horizontal-gallery + .horizontal-gallery{
+    margin-top:60px;
+}
+
 .horizontal-gallery img{
-    width:800px;
+    width:850px;
     height:550px;
     object-fit:cover;
     cursor:grab;
@@ -146,6 +147,7 @@ html, body, * {
     position:fixed;
     bottom:40px;
     left:60px;
+    width:700px;
     color:white;
     font-family:'Bespoke';
     z-index:200;
@@ -160,7 +162,7 @@ html, body, * {
 .project-title p{
     font-size:12px;
     margin-top:10px;
-    line-height:1.4;
+    line-height: 1.4;
 }
 
 /* ================= スマホ最適化 ================= */
@@ -169,6 +171,7 @@ html, body, * {
 
     body{
         padding-bottom:120px;
+        overflow-x:hidden;
     }
 
     /* ロゴ位置 */
@@ -196,9 +199,16 @@ html, body, * {
         left:auto;
         transform:none !important;
         overflow-x:auto;
-        padding:120px 20px 40px 120px;
+        width:140vw;
+        padding:120px 20px 40px 150px;
         gap:10px;
     }
+
+    .horizontal-gallery img{
+    width:765px;   /* 850 × 0.9 */
+    height:495px;  /* 550 × 0.9 */
+}
+
 
     /* タイトルを固定解除 */
     .project-title{
@@ -209,14 +219,17 @@ html, body, * {
     }
 
     .project-title h1{
-        font-size:27px;
+        font-size:22px;
     }
 
     .project-title p{
-        font-size:9px;
+        font-size:7px;
+        width:100vw;
     }
 
 }
+
+
 
 </style>
 </head>
@@ -228,7 +241,7 @@ html, body, * {
 <div class="menu-btn" onclick="toggleMenu()">≡</div>
 
 <div class="menu" id="menu">
-    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../home.html">Heavenward Submarine</a>
     <a href="../gallery/gallery.html">Gallery</a>
     <a href="../NewRelease/NewRelease.html">New Release</a>
     <a href="../About/About.html">About</a>
@@ -237,29 +250,66 @@ html, body, * {
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
+<!-- ===== Gallery 1 ===== -->
+
 <div class="horizontal-gallery">
-    <img src="images/サムネイル.webp">
-    <img src="images/tatto-4.webp">
-    <img src="images/截屏2024-05-04 18.28.57.webp">
-    <img src="images/截屏2024-05-04 18.29.12.webp">
     <img src="images/1.webp">
-    <img src="images/4.webp">
-    <img src="images/截屏2024-05-04 18.29.22.webp">
-    <img src="images/3.webp">
-    <img src="images/截屏2024-05-04 18.29.30.webp">
+    <img src="images/5.webp">
     <img src="images/2.webp">
+    <img src="images/3.webp">
+    <img src="images/6.webp">
+    <img src="images/7.webp">
+    <img src="images/8.webp">
+    <img src="images/4.webp">
+    <img src="images/9.webp">
+    <img src="images/10.webp">
+    <img src="images/11.webp">
+    <img src="images/23.webp">
+    <img src="images/25.webp">
+    <img src="images/37.webp">
+    <img src="images/40.webp">
+    <img src="images/39.webp">
+    <img src="images/44.webp">
+    <img src="images/46.webp">
 </div>
 
+<!-- ===== Title ===== -->
+
 <div class="project-title">
-    <h1>Downward is Heavenward</h1>
+    <h1>FACE book</h1>
     <p>
-        2022, Tokyo, Japan.<br>
-        Inspiration from HUM band.
-         <p><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:<br>
-            {“A dusty sleep you took too soon,”:<br>
-           {“and you need watering if you are to bloom.}}<br>
-           </i></p>
+        "The Faces Behind Face"<br>
+        2021-2024, Tokyo.<br><br>
+        <i>
+        東京のレコード屋での3年間の勤務中、様々なクラブで同僚たちと過ごした夜をフィルム写真で記録してきました。<br>
+        フォトZineを制作し、FACE Recordsの勤務後に見せる多才な同僚たちの異なる顔を映し出しています。<br>
+        Over three years of working in FACE Records Tokyo, capturing colleagues in Tokyo's underground nightlife.<br>
+        These were compiled into a 100-page photo zine, revealing the diverse faces of colleagues after hours.
+        </i>
     </p>
+</div>
+
+<!-- ===== Gallery 2 ===== -->
+
+<div class="horizontal-gallery">
+    <img src="images/22.webp">
+    <img src="images/12.webp">
+    <img src="images/13.webp">
+    <img src="images/14.webp">
+    <img src="images/15.webp">
+    <img src="images/16.webp">
+    <img src="images/30.webp">
+    <img src="images/28.webp">
+    <img src="images/17.webp">
+    <img src="images/18.webp">
+    <img src="images/19.webp">
+    <img src="images/38.webp">
+    <img src="images/20.webp">
+    <img src="images/21.webp">
+    <img src="images/32.webp">
+    <img src="images/45.webp">
+    <img src="images/33.webp">
+    <img src="images/27.webp">
 </div>
 
 <script>
@@ -268,7 +318,6 @@ const galleries = document.querySelectorAll(".horizontal-gallery");
 
 let isDown = false;
 let startX = 0;
-let isDragging = false;
 
 let states = [];
 
@@ -283,7 +332,6 @@ galleries.forEach((gallery,index)=>{
 
 document.addEventListener("mousedown", (e)=>{
     isDown = true;
-    isDragging = false;
     startX = e.clientX;
     document.body.classList.add("dragging");
 });
@@ -291,20 +339,12 @@ document.addEventListener("mousedown", (e)=>{
 document.addEventListener("mouseup", ()=>{
     isDown = false;
     document.body.classList.remove("dragging");
-
-    // 少しでも動いたらクリック無効
-    setTimeout(()=>{ isDragging = false; }, 50);
 });
 
 document.addEventListener("mousemove", (e)=>{
     if(!isDown) return;
 
     const dx = e.clientX - startX;
-
-    if(Math.abs(dx) > 2){
-        isDragging = true;
-    }
-
     startX = e.clientX;
 
     galleries.forEach((gallery,index)=>{
@@ -328,9 +368,8 @@ function animate(){
         if(state.current > maxLeft) state.current = maxLeft;
         if(state.current < maxRight) state.current = maxRight;
 
-        // ★ 中央固定を維持しつつ横移動
         gallery.style.transform =
-            `translate(${state.current}px, -50%)`;
+            `translateX(${state.current}px)`;
     });
 
     requestAnimationFrame(animate);
@@ -338,15 +377,13 @@ function animate(){
 
 animate();
 
-/* ===== クリック中央移動 ===== */
+/* ===== クリック中央 ===== */
 
 galleries.forEach((gallery,index)=>{
 
     gallery.querySelectorAll("img").forEach(img=>{
 
-        img.addEventListener("click",(e)=>{
-
-            if(isDragging) return; // ドラッグ中は無効
+        img.addEventListener("click", ()=>{
 
             const rect = img.getBoundingClientRect();
             const imgCenter = rect.left + rect.width / 2;
@@ -356,7 +393,6 @@ galleries.forEach((gallery,index)=>{
         });
 
     });
-
 });
 
 window.addEventListener("resize", () => {

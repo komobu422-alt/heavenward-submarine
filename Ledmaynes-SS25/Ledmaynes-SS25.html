@@ -3,7 +3,7 @@
 <head><link rel="icon" type="image/png" href="/favicon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Don’t say Goodnight</title>
+<title>Ledmaynes SS25</title>
 
 <style>
 
@@ -19,7 +19,7 @@
 body{
     margin:0;
     background:#290db7;
-    padding-bottom:200px;
+    padding-bottom: 200px;
     cursor:grab;
 }
 
@@ -30,7 +30,6 @@ body.dragging{
 html, body, * {
     cursor: none !important;
 }
-
 
 /* ================= ロゴ ================= */
 
@@ -60,23 +59,23 @@ html, body, * {
 /* ================= 横ギャラリー ================= */
 
 .horizontal-gallery{
-    position:absolute;
-    top:55%;
-    left:0;
-    transform:translateY(-50%);
+    position:relative;
     display:flex;
     gap:10px;
-    padding:0 20vw;
+    padding:170px 20vw 0 20vw;
     user-select:none;
 }
 
+.horizontal-gallery + .horizontal-gallery{
+    margin-top:60px;
+}
+
 .horizontal-gallery img{
-    width:800px;
-    height:520px;
+    width:850px;
+    height:550px;
     object-fit:cover;
     cursor:grab;
     -webkit-user-drag:none;
-    
 }
 
 /* ================= メニュー ================= */
@@ -149,6 +148,7 @@ html, body, * {
     position:fixed;
     bottom:40px;
     left:60px;
+    width:700px;
     color:white;
     font-family:'Bespoke';
     z-index:200;
@@ -161,9 +161,22 @@ html, body, * {
 }
 
 .project-title p{
-    font-size:14px;
+    font-size:12px;
     margin-top:10px;
-    line-height:1.4;
+    line-height:1.6;
+}
+
+/* ================= インスタリンク ================= */
+
+.instagram-link{
+    margin-left:0px;
+    text-decoration:none;
+    color:white;
+    transition:color 0.3s ease;
+}
+
+.instagram-link:hover{
+    color:#8c8c8c;
 }
 
 /* ================= スマホ最適化 ================= */
@@ -180,6 +193,7 @@ html, body, * {
         top:20px;
         padding:8px 18px;
         font-size:14px;
+        white-space: nowrap;
     }
 
     /* メニュー幅調整 */
@@ -199,9 +213,15 @@ html, body, * {
         left:auto;
         transform:none !important;
         overflow-x:auto;
-        padding:120px 20px 40px 120px;
+        width:140vw;
+        padding:120px 20px 40px 130px;
         gap:10px;
     }
+
+        .horizontal-gallery img{
+    width:765px;   /* 850 × 0.9 */
+    height:495px;  /* 550 × 0.9 */
+}
 
     /* タイトルを固定解除 */
     .project-title{
@@ -212,15 +232,15 @@ html, body, * {
     }
 
     .project-title h1{
-        font-size:26px;
+        font-size:22px;
     }
 
     .project-title p{
-        font-size:11px;
+        font-size:8px;
+        width:100vw;
     }
 
 }
-
 </style>
 </head>
 
@@ -231,7 +251,7 @@ html, body, * {
 <div class="menu-btn" onclick="toggleMenu()">≡</div>
 
 <div class="menu" id="menu">
-    <a href="../index.html">Heavenward Submarine</a>
+    <a href="../home.html">Heavenward Submarine</a>
     <a href="../gallery/gallery.html">Gallery</a>
     <a href="../NewRelease/NewRelease.html">New Release</a>
     <a href="../About/About.html">About</a>
@@ -240,42 +260,64 @@ html, body, * {
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-<div class="horizontal-gallery" id="gallery">
-    <img src="images/3.webp">
-    <img src="images/4.webp">
-    <img src="images/1.webp">
-    <img src="images/サムネイル.webp">
-    <img src="images/6.webp">
-    <img src="images/12.webp">
-    <img src="images/7.webp">
-    <img src="images/9.webp">
-    <img src="images/10.webp">
-    <img src="images/15.webp">
-    <img src="images/13.webp">
-    <img src="images/16.webp">
-    <img src="images/14.webp">
-    <img src="images/8.webp">
-    <img src="images/17.webp">
-    <img src="images/2.webp">
+<!-- ===== Gallery 1 ===== -->
 
+<div class="horizontal-gallery">
+    <img src="images/サムネイル.webp">
+    <img src="images/2.webp">
+    <img src="images/5.webp.webp">
+    <img src="images/6.webp.webp">
+    <img src="images/1.webp">
+    <img src="images/4.webp">
+    <img src="images/7.webp.webp">
+    <img src="images/3.webp">
+    <img src="images/8.webp">
+    <img src="images/20.webp">
+    
 </div>
 
+<!-- ===== Title ===== -->
+
 <div class="project-title">
-    <h1>Don’t say Goodnight</h1>
+    <h1>Ledmaynes SS25 collection</h1>
     <p>
-        2025, Tokyo.<br>
-        Zu Bar & Counter club<br>
-        Shibuya & Shimokitazawa<br>
+        "recto verso"<br>  
+        2025, Tokyo, Japan.<br>
+         <p><i>Model: @brookegabel @svevino<br>
+               Design:
+               <a href="https://www.instagram.com/chi._ledmaynes" 
+                  target="_blank" 
+                  class="instagram-link">@chi._ledmaynes</a>
+               <a href="https://www.instagram.com/ledmaynes_official" 
+                  target="_blank" 
+                  class="instagram-link">@ledmaynes_official</a><br>
+               Photo: @ko.bezu    Hair/Make: @eri.pms<br>
+           </i></p>
     </p>
 </div>
 
+<!-- ===== Gallery 2 ===== -->
+
+<div class="horizontal-gallery">
+    <img src="images/9.webp">
+    <img src="images/10.webp">
+    <img src="images/12.webp">
+    <img src="images/13.webp">
+    <img src="images/15.webp">
+    <img src="images/14.webp">
+    <img src="images/16.webp">
+    <img src="images/17.webp">
+    <img src="images/23.webp">
+    <img src="images/11.webp">
+    <img src="images/18.webp">
+    <img src="images/21.webp">
+</div>
 <script>
 
 const galleries = document.querySelectorAll(".horizontal-gallery");
 
 let isDown = false;
 let startX = 0;
-let isDragging = false;
 
 let states = [];
 
@@ -290,7 +332,6 @@ galleries.forEach((gallery,index)=>{
 
 document.addEventListener("mousedown", (e)=>{
     isDown = true;
-    isDragging = false;
     startX = e.clientX;
     document.body.classList.add("dragging");
 });
@@ -298,20 +339,12 @@ document.addEventListener("mousedown", (e)=>{
 document.addEventListener("mouseup", ()=>{
     isDown = false;
     document.body.classList.remove("dragging");
-
-    // 少しでも動いたらクリック無効
-    setTimeout(()=>{ isDragging = false; }, 50);
 });
 
 document.addEventListener("mousemove", (e)=>{
     if(!isDown) return;
 
     const dx = e.clientX - startX;
-
-    if(Math.abs(dx) > 2){
-        isDragging = true;
-    }
-
     startX = e.clientX;
 
     galleries.forEach((gallery,index)=>{
@@ -335,9 +368,8 @@ function animate(){
         if(state.current > maxLeft) state.current = maxLeft;
         if(state.current < maxRight) state.current = maxRight;
 
-        // ★ 中央固定を維持しつつ横移動
         gallery.style.transform =
-            `translate(${state.current}px, -50%)`;
+            `translateX(${state.current}px)`;
     });
 
     requestAnimationFrame(animate);
@@ -345,15 +377,13 @@ function animate(){
 
 animate();
 
-/* ===== クリック中央移動 ===== */
+/* ===== クリック中央 ===== */
 
 galleries.forEach((gallery,index)=>{
 
     gallery.querySelectorAll("img").forEach(img=>{
 
-        img.addEventListener("click",(e)=>{
-
-            if(isDragging) return; // ドラッグ中は無効
+        img.addEventListener("click", ()=>{
 
             const rect = img.getBoundingClientRect();
             const imgCenter = rect.left + rect.width / 2;
@@ -363,7 +393,6 @@ galleries.forEach((gallery,index)=>{
         });
 
     });
-
 });
 
 window.addEventListener("resize", () => {
