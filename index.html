@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
+<head><link rel="icon" type="image/png" href="/favicon.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heavenward Submarine</title>
@@ -118,6 +118,17 @@ a {
 
 <script>
 
+/* ===== スマホボタン ===== */
+const button = document.querySelector(".gallery-button");
+
+button.addEventListener("touchstart", () => {
+    button.classList.add("active-touch");
+});
+
+button.addEventListener("touchend", () => {
+    button.classList.remove("active-touch");
+});
+
 /* ===== メニュー ===== */
 function toggleMenu(){
     document.getElementById("menu").classList.toggle("open");
@@ -213,16 +224,6 @@ function animateCursor(){
 }
 
 animateCursor();
-
-const button = document.querySelector(".gallery-button");
-
-button.addEventListener("touchstart", () => {
-    button.classList.add("active-touch");
-});
-
-button.addEventListener("touchend", () => {
-    button.classList.remove("active-touch");
-});
 
 </script>
 
