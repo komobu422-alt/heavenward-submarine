@@ -200,7 +200,7 @@ html, body, * {
         transform:none !important;
         overflow-x:auto;
         padding:120px 20px 40px 120px;
-        gap:15px;
+        gap:10px;
     }
 
     /* タイトルを固定解除 */
@@ -386,54 +386,62 @@ window.addEventListener("resize", () => {
 });
 
 /* ===== メニュー ===== */
-
 function toggleMenu(){
     document.getElementById("menu").classList.toggle("open");
     document.getElementById("overlay").classList.toggle("show");
 }
 
+/* ===== カーソル非表示 ===== */
 document.body.style.cursor = "none";
 document.documentElement.style.cursor = "none";
-  
+
+/* ===== カーソル本体 ===== */
 const cursor = document.createElement("div");
 cursor.innerHTML = "❄︎";
-cursor.style.color = "white";
 cursor.style.position = "fixed";
 cursor.style.pointerEvents = "none";
 cursor.style.fontSize = "50px";
+cursor.style.color = "white";
 cursor.style.zIndex = "100000";
 cursor.style.transform = "translate(-50%, -50%)";
 document.body.appendChild(cursor);
 
-document.addEventListener("mousemove", e => {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top = e.clientY + "px";
-});
+/* ===== 遅れて動く雪 ===== */
+const snow = document.createElement("div");
+snow.innerHTML = "❄︎";
+snow.style.position = "fixed";
+snow.style.pointerEvents = "none";
+snow.style.fontSize = "40px";
+snow.style.color = "white";
+snow.style.zIndex = "99999";
+snow.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(snow);
 
+/* ===== クリック回転 ===== */
+let enableClickSpin = true;
 
 document.addEventListener("click", e => {
 
+    if(!enableClickSpin) return;
+
     const snow = document.createElement("div");
     snow.innerHTML = "❄︎";
-    snow.style.color = "white";   // ← 追加
     snow.style.position = "fixed";
     snow.style.left = e.clientX + "px";
     snow.style.top = e.clientY + "px";
-    snow.style.fontSize = "22px";
+    snow.style.fontSize = "30px";
+    snow.style.color = "white";
     snow.style.pointerEvents = "none";
     snow.style.zIndex = "99999";
     snow.style.transform = "translate(-50%, -50%)";
     document.body.appendChild(snow);
 
     let rotation = 0;
-    let scale = 1;
 
     const spin = setInterval(() => {
-        rotation += 8;
-        scale += 0.05;
-
+        rotation += 6;
         snow.style.transform =
-            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
+            "translate(-50%, -50%) rotate(" + rotation + "deg)";
     }, 16);
 
     setTimeout(() => {
@@ -441,6 +449,37 @@ document.addEventListener("click", e => {
         snow.remove();
     }, 800);
 });
+
+/* ===== 位置管理 ===== */
+let mouseX = 0;
+let mouseY = 0;
+let snowX = 0;
+let snowY = 0;
+
+/* マウス取得 */
+document.addEventListener("mousemove", e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+/* ===== カーソルアニメーション（横スクロールと分離） ===== */
+function animateCursor(){
+
+    /* 即追従 */
+    cursor.style.left = mouseX + "px";
+    cursor.style.top = mouseY + "px";
+
+    /* 遅れて追従（慣性） */
+    snowX += (mouseX - snowX) * 0.08;
+    snowY += (mouseY - snowY) * 0.08;
+
+    snow.style.left = snowX + "px";
+    snow.style.top = snowY + "px";
+
+    requestAnimationFrame(animateCursor);
+}
+
+animateCursor();
 
 </script>
 

@@ -116,10 +116,25 @@ html, body, * {
     pointer-events:auto;
 }
 
+/* ================= 上部ビジュアル ================= */
+
+.top-visual{
+    width:80%;
+    height:90px;          
+    margin-top:2px;       /* ロゴと被らないため */
+}
+
+.top-visual img{
+    width:80%;
+    height:auto;
+    object-fit:cover;      /* 重要：トリミングして全面表示 */
+    display:block;
+}
+
 /* ================= タイトル ================= */
 
 .page-title{
-    margin:130px 0 10px 10%;
+    margin:30px 0 10px 10%;
     font-size:50px;
     font-weight:500;
 }
@@ -137,7 +152,7 @@ html, body, * {
 
 .contact-wrapper{
     width:1000px;
-    margin:0px auto 100px auto;
+    margin:-20px auto 100px auto;
     display:grid;
     grid-template-columns: 1fr 1fr;
     gap:10px;
@@ -223,7 +238,7 @@ body{
     /* タイトル */
     .page-title{
         font-size:32px;
-        margin:100px 0 5px 6%;
+        margin:0px 0 5px 6%;
     }
 
     .sub-title{
@@ -286,9 +301,24 @@ body{
         padding:120px 40px;
     }    
     .menu-btn{
+        top:10px;
+        font-family:'GeorgiaCustom';
         right:20px;
-        font-size:32px;
+        font-size:32px;   
     }
+
+        .top-visual{
+        height:100px;                 
+        margin:10px 0px 0px -20px;
+        width:calc(100% - 30px);
+        overflow:hidden;
+    }
+
+    .top-visual img{
+        width:100%;
+        height:80%;
+    }
+
 }
 </style>
 </head>
@@ -310,6 +340,10 @@ body{
 </div>
 
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="top-visual">
+    <img src="../About/images/top-visual.webp" alt="">
+</div>
 
 <!-- タイトル -->
 <h1 class="page-title">Contact</h1>
@@ -356,62 +390,102 @@ body{
 </div>
 
 <script>
+/* ===== メニュー ===== */
 function toggleMenu(){
     document.getElementById("menu").classList.toggle("open");
     document.getElementById("overlay").classList.toggle("show");
 }
-</script>
 
-<script>
+/* ===== カーソル非表示 ===== */
+document.body.style.cursor = "none";
+document.documentElement.style.cursor = "none";
+
+/* ===== カーソル本体 ===== */
 const cursor = document.createElement("div");
 cursor.innerHTML = "❄︎";
 cursor.style.position = "fixed";
 cursor.style.pointerEvents = "none";
 cursor.style.fontSize = "50px";
+cursor.style.color = "white";
 cursor.style.zIndex = "100000";
 cursor.style.transform = "translate(-50%, -50%)";
 document.body.appendChild(cursor);
 
-document.addEventListener("mousemove", e => {
-    cursor.style.left = e.clientX + "px";
-    cursor.style.top = e.clientY + "px";
-});
-</script>
+/* ===== 遅れて動く雪 ===== */
+const snow = document.createElement("div");
+snow.innerHTML = "❄︎";
+snow.style.position = "fixed";
+snow.style.pointerEvents = "none";
+snow.style.fontSize = "40px";
+snow.style.color = "white";
+snow.style.zIndex = "99999";
+snow.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(snow);
 
-<script>
+/* ===== クリック回転 ===== */
+let enableClickSpin = true;
+
 document.addEventListener("click", e => {
+
+    if(!enableClickSpin) return;
 
     const snow = document.createElement("div");
     snow.innerHTML = "❄︎";
     snow.style.position = "fixed";
     snow.style.left = e.clientX + "px";
     snow.style.top = e.clientY + "px";
-    snow.style.fontSize = "22px";
+    snow.style.fontSize = "30px";
+    snow.style.color = "white";
     snow.style.pointerEvents = "none";
     snow.style.zIndex = "99999";
     snow.style.transform = "translate(-50%, -50%)";
     document.body.appendChild(snow);
 
     let rotation = 0;
-    let scale = 1;
 
     const spin = setInterval(() => {
-        rotation += 8;
-        scale += 0.05;
-
+        rotation += 6;
         snow.style.transform =
-            "translate(-50%, -50%) rotate(" + rotation + "deg) scale(" + scale + ")";
-
+            "translate(-50%, -50%) rotate(" + rotation + "deg)";
     }, 16);
 
-    // 0.8秒後に消す
     setTimeout(() => {
         clearInterval(spin);
         snow.remove();
     }, 800);
 });
-</script>
 
+/* ===== 位置管理 ===== */
+let mouseX = 0;
+let mouseY = 0;
+let snowX = 0;
+let snowY = 0;
+
+/* マウス取得 */
+document.addEventListener("mousemove", e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+/* ===== カーソルアニメーション（横スクロールと分離） ===== */
+function animateCursor(){
+
+    /* 即追従 */
+    cursor.style.left = mouseX + "px";
+    cursor.style.top = mouseY + "px";
+
+    /* 遅れて追従（慣性） */
+    snowX += (mouseX - snowX) * 0.08;
+    snowY += (mouseY - snowY) * 0.08;
+
+    snow.style.left = snowX + "px";
+    snow.style.top = snowY + "px";
+
+    requestAnimationFrame(animateCursor);
+}
+
+animateCursor();
+</script>
 
 </body>
 </html>
