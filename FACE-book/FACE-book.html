@@ -40,6 +40,7 @@ gtag('config', 'G-9ML95CZJ7V', {
 </script>
 <script src="/js/analytics.js"></script>
 
+<script>document.documentElement.classList.add('js');</script>
 </head>
 <style>
 
@@ -268,6 +269,40 @@ html, body, * {
 
 
 </style>
+<style id="enhance">
+/* ===== 追加分のみ（写真サイズ・位置・文字は一切変更しません） ===== */
+html { overscroll-behavior-x: none; }
+html.lock { overflow: hidden; }
+@media (min-width: 769px) { body { touch-action: pan-y; } }
+
+a:focus-visible, .menu-btn:focus-visible { outline: 1px solid #fff; outline-offset: 4px; }
+
+/* メニュー：項目が順番にスライドイン */
+.menu a { opacity: 0; transform: translateX(16px); transition: color .3s ease, opacity .4s ease, transform .5s cubic-bezier(.22,1,.36,1); }
+.menu.open a { opacity: 1; transform: none; transition-delay: calc(var(--i, 0) * 50ms + .15s); }
+.menu.open a:hover { color: rgba(255,255,255,.4); transform: scale(.98); transition-delay: 0s; }
+
+/* 写真：ふわっと表示（透明度のみ） */
+.js .horizontal-gallery img { opacity: 0; transition: opacity .8s ease; }
+.js .horizontal-gallery img.shown { opacity: 1; }
+
+/* 進行バー（画面最下部） */
+#progress { position: fixed; left: 0; bottom: 0; width: 100%; height: 2px; background: rgba(255,255,255,.75); transform-origin: left; transform: scaleX(0); z-index: 300; pointer-events: none; }
+@media (max-width: 768px) { #progress { display: none; } }
+
+/* 雪のカーソル */
+.flake { position: fixed; top: 0; left: 0; color: #fff; pointer-events: none; opacity: 0; transition: opacity .3s; will-change: transform; user-select: none; }
+.flake.on { opacity: 1; }
+.flake.main  { font-size: 50px; z-index: 100000; }
+.flake.trail { font-size: 40px; z-index: 99999; }
+@media (hover: none), (pointer: coarse) { .flake.main, .flake.trail { display: none; } }
+.burst { position: fixed; font-size: 30px; color: #fff; pointer-events: none; z-index: 99999; will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .menu, .menu a, .js .horizontal-gallery img { transition-duration: .01s; transition-delay: 0s !important; }
+}
+</style>
+
 </head>
 
 <body>
@@ -349,203 +384,268 @@ html, body, * {
 </div>
 
 <script>
+(() => {
+  const gal    = [...document.querySelectorAll('.horizontal-gallery')];
+  const imgs   = [...document.querySelectorAll('.horizontal-gallery img')];
+  const mobile = matchMedia('(max-width: 768px)');          // スマホ表示は元のネイティブ横スクロールのまま
+  const fine   = matchMedia('(hover: hover) and (pointer: fine)');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
-const galleries = document.querySelectorAll(".horizontal-gallery");
+  /* ================= メニュー（HTMLはそのまま／onclickも維持） ================= */
+  const menu    = document.getElementById('menu');
+  const overlay = document.getElementById('overlay');
+  const menuBtn = document.querySelector('.menu-btn');
+  menu.querySelectorAll('a').forEach((a, i) => a.style.setProperty('--i', i));
+  menu.inert = true;
+  menuBtn.setAttribute('role', 'button');
+  menuBtn.setAttribute('tabindex', '0');
+  menuBtn.setAttribute('aria-label', 'メニューを開く');
+  menuBtn.setAttribute('aria-expanded', 'false');
+  menuBtn.setAttribute('aria-controls', 'menu');
 
-let isDown = false;
-let startX = 0;
+  const menuOpen = () => menu.classList.contains('open');
+  function setMenu(open, returnFocus) {
+    menu.classList.toggle('open', open);
+    overlay.classList.toggle('show', open);
+    menu.inert = !open;
+    document.documentElement.classList.toggle('lock', open);
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+    if (open) menu.querySelector('a').focus({ preventScroll: true });
+    else if (returnFocus) menuBtn.focus();
+  }
+  window.toggleMenu = () => setMenu(!menuOpen());
+  menuBtn.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.toggleMenu(); }
+  });
 
-let states = [];
+  /* ================= 横ギャラリー ================= */
+  let cur = 0, target = 0;
+  let mins = gal.map(() => 0), gmin = 0;
+  let dragging = false, down = false, dragged = false, suppressClick = false;
+  let startX = 0, lastX = 0, lastT = 0, vel = 0, pid = null;
+  let running = false, last = 0;
 
-galleries.forEach((gallery,index)=>{
-    states[index] = {
-        current:0,
-        target:0
-    };
-});
+  const progress = document.createElement('div');
+  progress.id = 'progress';
+  document.body.appendChild(progress);
 
-/* ===== ドラッグ ===== */
+  // 範囲は元のコードと同じ式（scrollWidth - 画面幅）
+  function bounds() {
+    mins = gal.map(g => Math.min(0, -(g.scrollWidth - innerWidth)));
+    gmin = Math.min(...mins);
+  }
+  const clamp = v => Math.max(gmin, Math.min(0, v));
 
-document.addEventListener("mousedown", (e)=>{
-    isDown = true;
-    startX = e.clientX;
-    document.body.classList.add("dragging");
-});
-
-document.addEventListener("mouseup", ()=>{
-    isDown = false;
-    document.body.classList.remove("dragging");
-});
-
-document.addEventListener("mousemove", (e)=>{
-    if(!isDown) return;
-
-    const dx = e.clientX - startX;
-    startX = e.clientX;
-
-    galleries.forEach((gallery,index)=>{
-        states[index].target += dx;
+  function render() {
+    gal.forEach((g, i) => {
+      g.style.transform = `translateX(${Math.max(mins[i], Math.min(0, cur))}px)`;
     });
-});
+    progress.style.transform = `scaleX(${gmin ? Math.min(1, Math.max(0, cur / gmin)) : 0})`;
+  }
 
-/* ===== アニメーション ===== */
+  function frame(now) {
+    const dt = Math.min(now - last, 50) || 16;
+    last = now;
+    bounds();
+    target = clamp(target);                                  // 端を越えて溜め込まない
+    const k = reduce.matches ? 1 : 1 - Math.pow(1 - (dragging ? .2 : .1), dt / 16.67);
+    cur += (target - cur) * k;
+    if (Math.abs(target - cur) < .1) cur = target;
+    render();
+    if (cur === target) { running = false; return; }
+    requestAnimationFrame(frame);
+  }
+  function kick() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(frame);
+  }
+  function moveTo(v) { bounds(); target = clamp(v); kick(); }
 
-function animate(){
+  /* --- ドラッグ（PCのマウス・ペン・タッチ対応） --- */
+  document.addEventListener('pointerdown', e => {
+    if (mobile.matches) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.target.closest('a, .menu-btn, .menu, .overlay')) return;
+    down = true; dragged = false;
+    startX = lastX = e.clientX;
+    lastT = e.timeStamp;
+    vel = 0; pid = e.pointerId;
+  });
 
-    galleries.forEach((gallery,index)=>{
+  document.addEventListener('pointermove', e => {
+    if (!down || e.pointerId !== pid) return;
+    if (!dragged) {
+      if (Math.abs(e.clientX - startX) < 6) return;          // 6px未満はクリック扱い
+      dragged = true; dragging = true;
+      document.body.classList.add('dragging');
+      try { document.documentElement.setPointerCapture(pid); } catch (_) {}
+      scaleTarget = .75; kickCursor();
+    }
+    const dx = e.clientX - lastX;
+    const dt = e.timeStamp - lastT;
+    lastX = e.clientX; lastT = e.timeStamp;
+    if (dt > 0) vel = vel * .8 + (dx / dt) * .2;
+    moveTo(target + dx);
+  });
 
-        const state = states[index];
+  function endDrag(e) {
+    if (!down || e.pointerId !== pid) return;
+    down = false;
+    if (dragged) {
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0);
+      if (e.type === 'pointerup' && !reduce.matches) moveTo(target + vel * 240);   // 慣性
+      dragging = false;
+      document.body.classList.remove('dragging');
+      scaleTarget = e.target.closest && e.target.closest('a, .menu-btn') ? 1.4 : 1;
+      kickCursor();
+    }
+    dragged = false;
+  }
+  document.addEventListener('pointerup', endDrag);
+  document.addEventListener('pointercancel', endDrag);
 
-        state.current += (state.target - state.current) * 0.1;
+  /* --- 写真クリックで中央へ（ドラッグ直後は除く） --- */
+  imgs.forEach(img => img.addEventListener('click', () => {
+    if (suppressClick || mobile.matches) return;
+    const r = img.getBoundingClientRect();
+    moveTo(cur + innerWidth / 2 - (r.left + r.width / 2));
+  }));
 
-        const maxLeft = 0;
-        const maxRight = -(gallery.scrollWidth - window.innerWidth);
+  /* --- トラックパッド横スワイプ／Shift+ホイール（縦スクロールは今まで通り） --- */
+  addEventListener('wheel', e => {
+    if (mobile.matches || menuOpen()) return;
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+    if (!d) return;
+    e.preventDefault();
+    moveTo(target - d);
+  }, { passive: false });
 
-        if(state.current > maxLeft) state.current = maxLeft;
-        if(state.current < maxRight) state.current = maxRight;
+  /* --- キーボード --- */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menuOpen()) { setMenu(false, true); return; }
+    if (mobile.matches || menuOpen() || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    const step = imgs[0].offsetWidth + 10;
+    moveTo(target + (e.key === 'ArrowLeft' ? step : -step));
+  });
 
-        gallery.style.transform =
-            `translateX(${state.current}px)`;
-    });
+  const remeasure = () => { bounds(); target = clamp(target); cur = clamp(cur); render(); };
+  addEventListener('resize', remeasure);
+  addEventListener('load', remeasure);
+  remeasure();
 
-    requestAnimationFrame(animate);
-}
+  /* ================= 写真のふわっと表示（透明度のみ・サイズや位置には影響なし） ================= */
+  if (reduce.matches || !('IntersectionObserver' in window)) {
+    imgs.forEach(i => i.classList.add('shown'));
+  } else {
+    let batch = 0;
+    const io = new IntersectionObserver(entries => {
+      batch = 0;
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.style.transitionDelay = (batch++ * 80) + 'ms';
+        en.target.classList.add('shown');
+        io.unobserve(en.target);
+      });
+    }, { threshold: .05 });
+    imgs.forEach(i => io.observe(i));
+  }
 
-animate();
+  /* ================= 雪のカーソル（マウス環境のみ表示） ================= */
+  const main  = makeFlake('main');
+  const trail = makeFlake('trail');
+  function makeFlake(type) {
+    const el = document.createElement('div');
+    el.className = 'flake ' + type;
+    el.textContent = '❄︎';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+    return el;
+  }
 
-/* ===== クリック中央 ===== */
+  let mx = 0, my = 0, tx = 0, ty = 0;
+  let scale = 1, scaleTarget = 1, spin = 0;
+  let cRunning = false, cLast = 0, shown = false;
 
-galleries.forEach((gallery,index)=>{
+  function place(el, x, y, s, r) {
+    el.style.transform =
+      `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${s}) rotate(${r}deg)`;
+  }
+  function cFrame(now) {
+    const dt = Math.min(now - cLast, 50) || 16;
+    cLast = now;
+    const k = reduce.matches ? 1 : 1 - Math.pow(1 - 0.3, dt / 16.67);
+    const dx = mx - tx, dy = my - ty;
+    tx += dx * k;
+    ty += dy * k;
+    scale += (scaleTarget - scale) * Math.min(1, dt / 90);
+    spin += (dx + dy) * 0.02 * (dt / 16.67);
+    place(main, mx, my, scale, 0);
+    place(trail, tx, ty, 1, reduce.matches ? 0 : spin);
+    if (Math.abs(dx) < .1 && Math.abs(dy) < .1 && Math.abs(scaleTarget - scale) < .005) { cRunning = false; return; }
+    requestAnimationFrame(cFrame);
+  }
+  function kickCursor() {
+    if (cRunning) return;
+    cRunning = true;
+    cLast = performance.now();
+    requestAnimationFrame(cFrame);
+  }
 
-    gallery.querySelectorAll("img").forEach(img=>{
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !fine.matches) return;
+    mx = e.clientX; my = e.clientY;
+    if (!shown) {
+      shown = true;
+      tx = mx; ty = my;
+      main.classList.add('on');
+      trail.classList.add('on');
+    }
+    kickCursor();
+  }, { passive: true });
 
-        img.addEventListener("click", ()=>{
+  document.documentElement.addEventListener('mouseleave', () => {
+    main.classList.remove('on'); trail.classList.remove('on'); shown = false;
+  });
 
-            const rect = img.getBoundingClientRect();
-            const imgCenter = rect.left + rect.width / 2;
-            const screenCenter = window.innerWidth / 2;
+  document.addEventListener('pointerover', e => {
+    if (e.pointerType !== 'mouse' || dragging) return;
+    scaleTarget = e.target.closest('a, .menu-btn') ? 1.4 : 1;
+    kickCursor();
+  });
 
-            states[index].target += screenCenter - imgCenter;
-        });
+  /* ================= クリックで雪が舞う ================= */
+  document.addEventListener('click', e => {
+    if (reduce.matches || suppressClick) return;
+    const f = document.createElement('div');
+    f.className = 'burst';
+    f.textContent = '❄︎';
+    f.style.left = e.clientX + 'px';
+    f.style.top  = e.clientY + 'px';
+    document.body.appendChild(f);
+    f.animate([
+      { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)',     opacity: 1 },
+      { transform: 'translate(-50%, -50%) rotate(300deg) scale(1.3)', opacity: 0 }
+    ], { duration: 800, easing: 'linear' })
+     .finished.then(() => f.remove(), () => f.remove());
+  });
 
-    });
-});
-
-window.addEventListener("resize", () => {
-
-    galleries.forEach((gallery, index) => {
-
-        const state = states[index];
-
-        const maxLeft = 0;
-        const maxRight = -(gallery.scrollWidth - window.innerWidth);
-
-        if(state.target > maxLeft) state.target = maxLeft;
-        if(state.target < maxRight) state.target = maxRight;
-
-        if(state.current > maxLeft) state.current = maxLeft;
-        if(state.current < maxRight) state.current = maxRight;
-
-    });
-
-});
-
-/* ===== メニュー ===== */
-function toggleMenu(){
-    document.getElementById("menu").classList.toggle("open");
-    document.getElementById("overlay").classList.toggle("show");
-}
-
-/* ===== カーソル非表示 ===== */
-document.body.style.cursor = "none";
-document.documentElement.style.cursor = "none";
-
-/* ===== カーソル本体 ===== */
-const cursor = document.createElement("div");
-cursor.innerHTML = "❄︎";
-cursor.style.position = "fixed";
-cursor.style.pointerEvents = "none";
-cursor.style.fontSize = "50px";
-cursor.style.color = "white";
-cursor.style.zIndex = "100000";
-cursor.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(cursor);
-
-/* ===== 遅れて動く雪 ===== */
-const snow = document.createElement("div");
-snow.innerHTML = "❄︎";
-snow.style.position = "fixed";
-snow.style.pointerEvents = "none";
-snow.style.fontSize = "40px";
-snow.style.color = "white";
-snow.style.zIndex = "99999";
-snow.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(snow);
-
-/* ===== クリック回転 ===== */
-let enableClickSpin = true;
-
-document.addEventListener("click", e => {
-
-    if(!enableClickSpin) return;
-
-    const snow = document.createElement("div");
-    snow.innerHTML = "❄︎";
-    snow.style.position = "fixed";
-    snow.style.left = e.clientX + "px";
-    snow.style.top = e.clientY + "px";
-    snow.style.fontSize = "30px";
-    snow.style.color = "white";
-    snow.style.pointerEvents = "none";
-    snow.style.zIndex = "99999";
-    snow.style.transform = "translate(-50%, -50%)";
-    document.body.appendChild(snow);
-
-    let rotation = 0;
-
-    const spin = setInterval(() => {
-        rotation += 6;
-        snow.style.transform =
-            "translate(-50%, -50%) rotate(" + rotation + "deg)";
-    }, 16);
-
-    setTimeout(() => {
-        clearInterval(spin);
-        snow.remove();
-    }, 800);
-});
-
-/* ===== 位置管理 ===== */
-let mouseX = 0;
-let mouseY = 0;
-let snowX = 0;
-let snowY = 0;
-
-/* マウス取得 */
-document.addEventListener("mousemove", e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
-
-/* ===== カーソルアニメーション（横スクロールと分離） ===== */
-function animateCursor(){
-
-    /* 即追従 */
-    cursor.style.left = mouseX + "px";
-    cursor.style.top = mouseY + "px";
-
-    /* 遅れて追従（慣性） */
-    snowX += (mouseX - snowX) * 0.08;
-    snowY += (mouseY - snowY) * 0.08;
-
-    snow.style.left = snowX + "px";
-    snow.style.top = snowY + "px";
-
-    requestAnimationFrame(animateCursor);
-}
-
-animateCursor();
-
+  /* ================= リンクの事前読み込み ================= */
+  const prefetched = new Set();
+  ['pointerenter', 'touchstart', 'focusin'].forEach(type =>
+    document.addEventListener(type, e => {
+      const a = e.target.closest && e.target.closest('a[href]');
+      if (!a || prefetched.has(a.href) || a.origin !== location.origin) return;
+      prefetched.add(a.href);
+      const l = document.createElement('link');
+      l.rel = 'prefetch';
+      l.href = a.href;
+      document.head.appendChild(l);
+    }, { passive: true, capture: true }));
+})();
 </script>
 
 </body>

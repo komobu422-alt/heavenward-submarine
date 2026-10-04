@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ko - Tokyo Music Photographer & Graphic Designer | Heavenward Submarine</title>
 <meta name="description" content="Tokyo-based photographer and graphic designer Ko (@ko.bezu). Under Heavenward Submarine, Ko creates visual work for bands and DJs, performs as a DJ, shares vinyl culture, and collaborates with fashion brands.">
 <link rel="canonical" href="https://heavenwardsubmarine.com/">
-<meta property="og:site_name" content="Heavenward Submarine">
-
-<!-- SEO -->
 <meta name="keywords" content="photography, zine, Tokyo photography, underground culture, photo zine, tokyo club, face records, heavenwardsubmarine">
 <meta name="author" content="Ko, HUANG MENGWEI">
+<meta name="theme-color" content="#290db7">
 
-<!-- favicon -->
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <link rel="icon" type="image/png" href="/favicon.png">
 
-<!-- Open Graph (SNS preview) -->
+<!-- Open Graph -->
+<meta property="og:site_name" content="Heavenward Submarine">
 <meta property="og:title" content="Heavenward Submarine">
 <meta property="og:description" content="Photography and zine projects by Ko. Tokyo underground culture.">
 <meta property="og:type" content="website">
@@ -32,333 +29,372 @@
 <meta name="twitter:description" content="Photography and zine projects by Ko.">
 <meta name="twitter:image" content="https://heavenwardsubmarine.com/og-image.jpg">
 
+<!-- 体感速度アップ：フォントを先読み、遷移先を事前取得 -->
+<link rel="preload" href="fonts/Bespoke-MjPdRlygxs.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="prefetch" href="gallery/gallery.html">
+
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9ML95CZJ7V"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-9ML95CZJ7V', {
-  page_path: window.location.pathname
-});
+gtag('config', 'G-9ML95CZJ7V', { page_path: window.location.pathname });
 </script>
-<script src="/js/analytics.js"></script>
+<script src="/js/analytics.js" defer></script>
 
-<!-- Structured Data (Google search preview) -->
+<!-- Structured Data -->
 <script type="application/ld+json">
 {
- "@context": "https://schema.org",
- "@type": "WebSite",
- "name": "Heavenward Submarine",
- "url": "https://heavenwardsubmarine.com/",
- "image": "https://heavenwardsubmarine.com/og-image.jpg",
- "author": {
-   "@type": "Person",
-   "name": "Ko"
- }
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Heavenward Submarine",
+  "url": "https://heavenwardsubmarine.com/",
+  "image": "https://heavenwardsubmarine.com/og-image.jpg",
+  "author": { "@type": "Person", "name": "Ko" }
 }
 </script>
 
-</head>
 <style>
-
 @font-face {
-    font-family: 'Bespoke';
-    src: url('fonts/Bespoke-MjPdRlygxs.ttf') format('truetype');
+  font-family: 'Bespoke';
+  src: url('fonts/Bespoke-MjPdRlygxs.ttf') format('truetype');
+  font-display: swap;
 }
+
+:root {
+  --blue: rgb(4, 0, 219);
+  --bg: #290db7;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
 
 body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Bespoke', sans-serif;
-    cursor: none;
-    position: relative;
-    overflow: hidden;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Bespoke', sans-serif;
+  background: var(--bg);          /* 動画が読み込まれるまでの下地 */
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* リンク装飾 */
-a {
-    text-decoration: none;
-}
+a { text-decoration: none; }
 
-/* メインボタン */
+/* ===== メインボタン ===== */
 .gallery-button {
-    color: white;
-    font-size: 28px;
-    letter-spacing: 4px;
-    border: 1px solid white;
-    padding: 13px 50px;
-    transition: 0.4s;
-    border-radius: 40px;
-    position: relative;
-    z-index: 10;
-    white-space: nowrap;
-    display: inline-block;
+  position: relative;
+  z-index: 10;
+  display: inline-block;
+  color: #fff;
+  font-size: 28px;
+  letter-spacing: 4px;
+  white-space: nowrap;
+  padding: 13px 50px;
+  border: 1px solid #fff;
+  border-radius: 40px;
+  transform: translate3d(var(--mx, 0px), var(--my, 0px), 0) scale(var(--s, 1));
+  transition: background .4s var(--ease), color .4s var(--ease),
+              transform .5s var(--ease), letter-spacing .5s var(--ease);
+  will-change: transform;
 }
 
 .gallery-button:hover,
-.gallery-button:active,
-.gallery-button:focus {
-    background: white;
-    color: rgb(4,0,219);
+.gallery-button:focus-visible,
+.gallery-button:active {
+  background: #fff;
+  color: var(--blue);
+  letter-spacing: 5px;
+  outline: none;
 }
+.gallery-button:active { --s: .96; }
 
+/* マウス追従中は遅延なく動かす */
+.gallery-button.magnet { transition: background .4s var(--ease), color .4s var(--ease), letter-spacing .5s var(--ease); }
 
-
-/* 背景動画 */
+/* ===== 背景動画 ===== */
 #bg-video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-    pointer-events: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+#bg-video.ready { opacity: 1; }
+
+/* ===== 雪のカーソル（マウス環境のみ） ===== */
+.flake {
+  position: fixed;
+  top: 0; left: 0;
+  color: #fff;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s;
+  will-change: transform;
+  user-select: none;
+}
+.flake.on { opacity: 1; }
+.flake.main  { font-size: 50px; z-index: 100000; }
+.flake.trail { font-size: 40px; z-index: 99999; }
+
+@media (hover: hover) and (pointer: fine) {
+  html, body, a { cursor: none; }
+}
+@media (hover: none), (pointer: coarse) {
+  .flake.main, .flake.trail { display: none; }
 }
 
-/* ================= スマホ最適化 ================= */
-@media screen and (max-width:768px){
-
-    body{
-        padding:0 20px;
-        text-align:center;
-        background: #290db7;
-    }
-
-    .gallery-button{
-        font-size:14px;
-        letter-spacing:2px;
-        padding:12px 20px;
-        width:80%;
-        max-width:320px;
-        box-sizing:border-box;
-        white-space: nowrap;
-    }
-
-    /* スマホ用：タップ反応を安定させる */
-     .gallery-button {
-     -webkit-tap-highlight-color: white;
-    }
-    .gallery-button.active-touch {
-     background: white;
-     color: rgb(4,0,219);
-    }
-
-    #bg-video{
-        display:none;
-    }
+/* クリックで舞う雪 */
+.burst {
+  position: fixed;
+  font-size: 30px;
+  color: #fff;
+  pointer-events: none;
+  z-index: 99999;
+  will-change: transform, opacity;
 }
 
-/* ================= LOADING SNOW ================= */
-
-#loader{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:white;
-    overflow:hidden;
-    z-index:9999;
+/* ===== スマホ ===== */
+@media (max-width: 768px) {
+  body { padding: 0 20px; text-align: center; }
+  .gallery-button {
+    font-size: 14px;
+    letter-spacing: 2px;
+    padding: 12px 20px;
+    width: 80%;
+    max-width: 320px;
+  }
+  .gallery-button:hover { letter-spacing: 2px; }
+  #bg-video { display: none; }
 }
 
-/* 雪 */
-
-.snow{
-    position:absolute;
-    top:-10px;
-    width:6px;
-    height:6px;
-    background:rgb(57, 40, 247);
-    border-radius:50%;
-    opacity:0.6;
-    animation:fall linear infinite;
+/* ===== ローディング（雪） ===== */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  overflow: hidden;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity .6s ease;
+}
+#loader.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .6s ease, visibility 0s .6s;
 }
 
-.snow:nth-child(1){
-    left:10%;
-    animation-duration:4s;
+.snow {
+  position: absolute;
+  top: -10px;
+  width: 6px;
+  height: 6px;
+  background: rgb(57, 40, 247);
+  border-radius: 50%;
+  opacity: .6;
+  animation: fall linear infinite;
+}
+.snow:nth-child(1) { left: 10%; animation-duration: 4s; }
+.snow:nth-child(2) { left: 30%; animation-duration: 6s; }
+.snow:nth-child(3) { left: 50%; animation-duration: 5s; }
+.snow:nth-child(4) { left: 70%; animation-duration: 7s; }
+.snow:nth-child(5) { left: 90%; animation-duration: 4.5s; }
+
+@keyframes fall {
+  from { transform: translateY(0); }
+  to   { transform: translateY(110vh); }
 }
 
-.snow:nth-child(2){
-    left:30%;
-    animation-duration:6s;
+/* 動きを減らす設定の人への配慮 */
+@media (prefers-reduced-motion: reduce) {
+  .gallery-button, #loader, #bg-video { transition-duration: .01s; }
+  .snow { animation: none; }
 }
-
-.snow:nth-child(3){
-    left:50%;
-    animation-duration:5s;
-}
-
-.snow:nth-child(4){
-    left:70%;
-    animation-duration:7s;
-}
-
-.snow:nth-child(5){
-    left:90%;
-    animation-duration:4.5s;
-}
-
-@keyframes fall{
-    0%{
-        transform:translateY(0);
-    }
-    100%{
-        transform:translateY(110vh);
-    }
-}
-
 </style>
 </head>
 <body>
 
-<!-- 背景動画 -->
-<video id="bg-video"
-       autoplay
-       muted
-       loop
-       playsinline>
-    <source src="Kyorikan-HP.mp4" type="video/mp4">
-</video>
+<!-- 背景動画（PCのみ・読み込み完了後にフェードイン） -->
+<video id="bg-video" data-src="Kyorikan-HP.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
 
-<!-- コンテンツ -->
-<a href="gallery/gallery.html" class="gallery-button">
-    Heavenward Submarine
-</a>
+<a href="gallery/gallery.html" class="gallery-button">Heavenward Submarine</a>
 
-<!-- Loading Screen -->
-<div id="loader">
-  <div class="snow"></div>
-  <div class="snow"></div>
-  <div class="snow"></div>
-  <div class="snow"></div>
-  <div class="snow"></div>
+<div id="loader" aria-hidden="true">
+  <div class="snow"></div><div class="snow"></div><div class="snow"></div>
+  <div class="snow"></div><div class="snow"></div>
 </div>
 
 <script>
+(() => {
+  const btn     = document.querySelector('.gallery-button');
+  const loader  = document.getElementById('loader');
+  const video   = document.getElementById('bg-video');
+  const fine    = matchMedia('(hover: hover) and (pointer: fine)');
+  const reduce  = matchMedia('(prefers-reduced-motion: reduce)');
+  const desktop = matchMedia('(min-width: 769px)');
 
-/* ===== スマホボタン ===== */
-const button = document.querySelector(".gallery-button");
+  /* ================= 背景動画：PCでのみ読み込む ================= */
+  let videoStarted = false;
+  function startVideo() {
+    if (videoStarted || !desktop.matches) return Promise.resolve();
+    videoStarted = true;
+    return new Promise(resolve => {
+      video.addEventListener('canplay', () => {
+        video.classList.add('ready');
+        video.play().catch(() => {});
+        resolve();
+      }, { once: true });
+      video.addEventListener('error', resolve, { once: true });
+      video.src = video.dataset.src;
+    });
+  }
+  desktop.addEventListener('change', startVideo);
 
-button.addEventListener("touchstart", () => {
-    button.classList.add("active-touch");
-});
+  // タブが裏に回ったら動画を止めてバッテリーを節約
+  document.addEventListener('visibilitychange', () => {
+    if (!videoStarted) return;
+    document.hidden ? video.pause() : video.play().catch(() => {});
+  });
 
-button.addEventListener("touchend", () => {
-    button.classList.remove("active-touch");
-});
+  /* ================= ローディング ================= */
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const assets = Promise.all([
+    document.fonts ? document.fonts.ready : Promise.resolve(),
+    startVideo(),
+    wait(800)                                  // 最低表示時間（ちらつき防止）
+  ]);
+  // 動画が重くても3.5秒で必ず開く
+  Promise.race([assets, wait(3500)]).then(() => loader.classList.add('hide'));
 
-/* ===== メニュー ===== */
-function toggleMenu(){
-    document.getElementById("menu").classList.toggle("open");
-    document.getElementById("overlay").classList.toggle("show");
-}
+  /* ================= 雪のカーソル ================= */
+  const main  = makeFlake('main');
+  const trail = makeFlake('trail');
+  function makeFlake(type) {
+    const el = document.createElement('div');
+    el.className = 'flake ' + type;
+    el.textContent = '❄︎';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+    return el;
+  }
 
-/* ===== カーソル非表示 ===== */
-document.body.style.cursor = "none";
-document.documentElement.style.cursor = "none";
+  let mx = 0, my = 0;          // マウス位置
+  let tx = 0, ty = 0;          // 遅れて追う雪の位置
+  let scale = 1, scaleTarget = 1;
+  let spin = 0;                // 移動速度に応じた回転
+  let running = false, last = 0, shown = false;
 
-/* ===== カーソル本体 ===== */
-const cursor = document.createElement("div");
-cursor.innerHTML = "❄︎";
-cursor.style.position = "fixed";
-cursor.style.pointerEvents = "none";
-cursor.style.fontSize = "50px";
-cursor.style.color = "white";
-cursor.style.zIndex = "100000";
-cursor.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(cursor);
+  function place(el, x, y, s, r) {
+    el.style.transform =
+      `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${s}) rotate(${r}deg)`;
+  }
 
-/* ===== 遅れて動く雪 ===== */
-const snow = document.createElement("div");
-snow.innerHTML = "❄︎";
-snow.style.position = "fixed";
-snow.style.pointerEvents = "none";
-snow.style.fontSize = "40px";
-snow.style.color = "white";
-snow.style.zIndex = "99999";
-snow.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(snow);
+  function frame(now) {
+    const dt = Math.min(now - last, 50) || 16;
+    last = now;
+    const k = reduce.matches ? 1 : 1 - Math.pow(1 - 0.3, dt / 16.67); // フレームレート非依存の慣性
 
-/* ===== クリック回転 ===== */
-let enableClickSpin = true;
+    const dx = mx - tx, dy = my - ty;
+    tx += dx * k;
+    ty += dy * k;
+    scale += (scaleTarget - scale) * Math.min(1, dt / 90);
+    spin += (dx + dy) * 1 * (dt / 16.67);   // 動いた分だけくるっと回る
 
-document.addEventListener("click", e => {
+    place(main, mx, my, scale, 0);
+    place(trail, tx, ty, 1, reduce.matches ? 0 : spin);
 
-    if(!enableClickSpin) return;
+    const settled = Math.abs(dx) < .1 && Math.abs(dy) < .1 &&
+                    Math.abs(scaleTarget - scale) < .005;
+    if (settled) { running = false; return; }   // 止まったらループも止める
+    requestAnimationFrame(frame);
+  }
+  function kick() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(frame);
+  }
 
-    const snow = document.createElement("div");
-    snow.innerHTML = "❄︎";
-    snow.style.position = "fixed";
-    snow.style.left = e.clientX + "px";
-    snow.style.top = e.clientY + "px";
-    snow.style.fontSize = "30px";
-    snow.style.color = "white";
-    snow.style.pointerEvents = "none";
-    snow.style.zIndex = "99999";
-    snow.style.transform = "translate(-50%, -50%)";
-    document.body.appendChild(snow);
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !fine.matches) return;
+    mx = e.clientX; my = e.clientY;
+    if (!shown) {                       // 初回は左上に出ないよう、現在位置から表示
+      shown = true;
+      tx = mx; ty = my;
+      main.classList.add('on');
+      trail.classList.add('on');
+    }
+    kick();
+  }, { passive: true });
 
-    let rotation = 0;
+  // ウィンドウ外に出たら隠す
+  document.documentElement.addEventListener('mouseleave', () => {
+    main.classList.remove('on'); trail.classList.remove('on'); shown = false;
+  });
 
-    const spin = setInterval(() => {
-        rotation += 6;
-        snow.style.transform =
-            "translate(-50%, -50%) rotate(" + rotation + "deg)";
-    }, 16);
+  /* ================= ボタン：マグネット＋ホバー ================= */
+  btn.addEventListener('pointerenter', e => {
+    if (e.pointerType !== 'mouse') return;
+    scaleTarget = 1.4; kick();
+  });
+  btn.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || reduce.matches) return;
+    const r = btn.getBoundingClientRect();
+    const ox = e.clientX - (r.left + r.width / 2);
+    const oy = e.clientY - (r.top + r.height / 2);
+    btn.classList.add('magnet');
+    btn.style.setProperty('--mx', (ox * 0.12).toFixed(1) + 'px');
+    btn.style.setProperty('--my', (oy * 0.2).toFixed(1) + 'px');
+  });
+  btn.addEventListener('pointerleave', () => {
+    scaleTarget = 1; kick();
+    btn.classList.remove('magnet');
+    btn.style.removeProperty('--mx');
+    btn.style.removeProperty('--my');
+  });
 
-    setTimeout(() => {
-        clearInterval(spin);
-        snow.remove();
-    }, 800);
-});
+  /* ================= クリック／タップで雪が舞う ================= */
+  document.addEventListener('click', e => {
+    if (reduce.matches) return;
+    const f = document.createElement('div');
+    f.className = 'burst';
+    f.textContent = '❄︎';
+    f.style.left = e.clientX + 'px';
+    f.style.top  = e.clientY + 'px';
+    document.body.appendChild(f);
 
-/* ===== 位置管理 ===== */
-let mouseX = 0;
-let mouseY = 0;
-let snowX = 0;
-let snowY = 0;
+    f.animate([
+      { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)',   opacity: 1 },
+      { transform: 'translate(-50%, -50%) rotate(300deg) scale(1.3)', opacity: 0 }
+    ], { duration: 800, easing: 'linear' })
+     .finished.then(() => f.remove(), () => f.remove());
+  });
 
-/* マウス取得 */
-document.addEventListener("mousemove", e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
+  /* ================= ページ遷移：雪の画面でフェード ================= */
+  let leaving = false;
+  btn.addEventListener('click', e => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return; // 新規タブ等は通常動作
+    e.preventDefault();
+    if (leaving) return;
+    leaving = true;
+    loader.classList.remove('hide');
+    setTimeout(() => { location.href = btn.href; }, reduce.matches ? 0 : 450);
+  });
 
-/* ===== カーソルアニメーション（横スクロールと分離） ===== */
-function animateCursor(){
-
-    /* 即追従 */
-    cursor.style.left = mouseX + "px";
-    cursor.style.top = mouseY + "px";
-
-    /* 遅れて追従（慣性） */
-    snowX += (mouseX - snowX) * 0.08;
-    snowY += (mouseY - snowY) * 0.08;
-
-    snow.style.left = snowX + "px";
-    snow.style.top = snowY + "px";
-
-    requestAnimationFrame(animateCursor);
-}
-
-animateCursor();
-
-</script>
-
-<script>
-window.addEventListener("load", function(){
-  const loader = document.getElementById("loader");
-  loader.style.opacity = "0";
-  setTimeout(() => {
-      loader.style.display = "none";
-  }, 600);
-});
+  // ブラウザの「戻る」で戻った時に白い画面のままにならないように
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) { leaving = false; loader.classList.add('hide'); }
+  });
+})();
 </script>
 
 </body>

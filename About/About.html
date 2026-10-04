@@ -35,6 +35,7 @@ gtag('config', 'G-9ML95CZJ7V', {
 </script>
 <script src="/js/analytics.js"></script>
 
+<script>document.documentElement.classList.add('js');</script>
 </head>
 <style>
 
@@ -311,6 +312,35 @@ html, body, * {
 
 }
 </style>
+<style id="enhance">
+/* ===== 追加分のみ（レイアウト・文字・余白は一切変更しません） ===== */
+html.lock { overflow: hidden; }
+
+a:focus-visible, .menu-btn:focus-visible { outline: 1px solid #fff; outline-offset: 4px; }
+
+/* メニュー：項目が順番にスライドイン */
+.menu a { opacity: 0; transform: translateX(16px); transition: color .3s ease, opacity .4s ease, transform .5s cubic-bezier(.22,1,.36,1); }
+.menu.open a { opacity: 1; transform: none; transition-delay: calc(var(--i, 0) * 50ms + .15s); }
+.menu.open a:hover { color: rgba(255,255,255,.4); transform: scale(.98); transition-delay: 0s; }
+
+/* 順番にふわっと表示 */
+.js .rv { opacity: 0; transform: translateY(12px); transition: opacity .8s ease, transform .9s cubic-bezier(.22,1,.36,1); }
+.js .rv.shown { opacity: 1; transform: none; }
+
+
+/* 雪のカーソル */
+.flake { position: fixed; top: 0; left: 0; color: #fff; pointer-events: none; opacity: 0; transition: opacity .3s; will-change: transform; user-select: none; }
+.flake.on { opacity: 1; }
+.flake.main  { font-size: 50px; z-index: 100000; }
+.flake.trail { font-size: 40px; z-index: 99999; }
+@media (hover: none), (pointer: coarse) { .flake.main, .flake.trail { display: none; } }
+.burst { position: fixed; font-size: 30px; color: #fff; pointer-events: none; z-index: 99999; will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .menu, .menu a, .js .rv { transition-duration: .01s; transition-delay: 0s !important; }
+}
+</style>
+
 </head>
 
 <body>
@@ -403,103 +433,154 @@ html, body, * {
 </div>
 
 <script>
+(() => {
+  const fine   = matchMedia('(hover: hover) and (pointer: fine)');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 
-/* ===== メニュー ===== */
-function toggleMenu(){
-    document.getElementById("menu").classList.toggle("open");
-    document.getElementById("overlay").classList.toggle("show");
-}
+  /* ================= メニュー（HTMLはそのまま／onclickも維持） ================= */
+  const menu    = document.getElementById('menu');
+  const overlay = document.getElementById('overlay');
+  const menuBtn = document.querySelector('.menu-btn');
+  menu.querySelectorAll('a').forEach((a, i) => a.style.setProperty('--i', i));
+  menu.inert = true;
+  menuBtn.setAttribute('role', 'button');
+  menuBtn.setAttribute('tabindex', '0');
+  menuBtn.setAttribute('aria-label', 'メニューを開く');
+  menuBtn.setAttribute('aria-expanded', 'false');
+  menuBtn.setAttribute('aria-controls', 'menu');
 
-/* ===== カーソル非表示 ===== */
-document.body.style.cursor = "none";
-document.documentElement.style.cursor = "none";
+  const menuOpen = () => menu.classList.contains('open');
+  function setMenu(open, returnFocus) {
+    menu.classList.toggle('open', open);
+    overlay.classList.toggle('show', open);
+    menu.inert = !open;
+    document.documentElement.classList.toggle('lock', open);
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+    if (open) menu.querySelector('a').focus({ preventScroll: true });
+    else if (returnFocus) menuBtn.focus();
+  }
+  window.toggleMenu = () => setMenu(!menuOpen());
+  menuBtn.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.toggleMenu(); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menuOpen()) setMenu(false, true);
+  });
 
-/* ===== カーソル本体 ===== */
-const cursor = document.createElement("div");
-cursor.innerHTML = "❄︎";
-cursor.style.position = "fixed";
-cursor.style.pointerEvents = "none";
-cursor.style.fontSize = "50px";
-cursor.style.color = "white";
-cursor.style.zIndex = "100000";
-cursor.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(cursor);
+  /* ================= 順番にふわっと表示（透明度と微小な移動のみ・レイアウトは不変） ================= */
+  const items = [...document.querySelectorAll('.page-title, .about-image, .contact-box, .about-text')];
+  items.forEach(el => el.classList.add('rv'));
+  if (reduce.matches || !('IntersectionObserver' in window)) {
+    items.forEach(el => el.classList.add('shown'));
+  } else {
+    let batch = 0;
+    const io = new IntersectionObserver(entries => {
+      batch = 0;
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.style.transitionDelay = (batch++ * 90) + 'ms';
+        en.target.classList.add('shown');
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -4% 0px' });
+    items.forEach(el => io.observe(el));
+  }
 
-/* ===== 遅れて動く雪 ===== */
-const snow = document.createElement("div");
-snow.innerHTML = "❄︎";
-snow.style.position = "fixed";
-snow.style.pointerEvents = "none";
-snow.style.fontSize = "40px";
-snow.style.color = "white";
-snow.style.zIndex = "99999";
-snow.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(snow);
+  /* ================= 雪のカーソル（マウス環境のみ表示） ================= */
+  const main  = makeFlake('main');
+  const trail = makeFlake('trail');
+  function makeFlake(type) {
+    const el = document.createElement('div');
+    el.className = 'flake ' + type;
+    el.textContent = '❄︎';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+    return el;
+  }
 
-/* ===== クリック回転 ===== */
-let enableClickSpin = true;
+  let mx = 0, my = 0, tx = 0, ty = 0;
+  let scale = 1, scaleTarget = 1, spin = 0;
+  let running = false, last = 0, shown = false;
 
-document.addEventListener("click", e => {
+  function place(el, x, y, s, r) {
+    el.style.transform =
+      `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${s}) rotate(${r}deg)`;
+  }
+  function frame(now) {
+    const dt = Math.min(now - last, 50) || 16;
+    last = now;
+    const k = reduce.matches ? 1 : 1 - Math.pow(1 - 0.3, dt / 16.67);
+    const dx = mx - tx, dy = my - ty;
+    tx += dx * k;
+    ty += dy * k;
+    scale += (scaleTarget - scale) * Math.min(1, dt / 90);
+    spin += (dx + dy) * 0.02 * (dt / 16.67);
+    place(main, mx, my, scale, 0);
+    place(trail, tx, ty, 1, reduce.matches ? 0 : spin);
+    if (Math.abs(dx) < .1 && Math.abs(dy) < .1 && Math.abs(scaleTarget - scale) < .005) { running = false; return; }
+    requestAnimationFrame(frame);
+  }
+  function kick() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(frame);
+  }
 
-    if(!enableClickSpin) return;
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !fine.matches) return;
+    mx = e.clientX; my = e.clientY;
+    if (!shown) {
+      shown = true;
+      tx = mx; ty = my;
+      main.classList.add('on');
+      trail.classList.add('on');
+    }
+    kick();
+  }, { passive: true });
 
-    const snow = document.createElement("div");
-    snow.innerHTML = "❄︎";
-    snow.style.position = "fixed";
-    snow.style.left = e.clientX + "px";
-    snow.style.top = e.clientY + "px";
-    snow.style.fontSize = "30px";
-    snow.style.color = "white";
-    snow.style.pointerEvents = "none";
-    snow.style.zIndex = "99999";
-    snow.style.transform = "translate(-50%, -50%)";
-    document.body.appendChild(snow);
+  document.documentElement.addEventListener('mouseleave', () => {
+    main.classList.remove('on'); trail.classList.remove('on'); shown = false;
+  });
 
-    let rotation = 0;
+  // リンク（画像のPDFリンクを含む）の上では雪が大きくなる
+  document.addEventListener('pointerover', e => {
+    if (e.pointerType !== 'mouse') return;
+    scaleTarget = e.target.closest('a, .menu-btn') ? 1.4 : 1;
+    kick();
+  });
 
-    const spin = setInterval(() => {
-        rotation += 6;
-        snow.style.transform =
-            "translate(-50%, -50%) rotate(" + rotation + "deg)";
-    }, 16);
+  /* ================= クリックで雪が舞う ================= */
+  document.addEventListener('click', e => {
+    if (reduce.matches) return;
+    const f = document.createElement('div');
+    f.className = 'burst';
+    f.textContent = '❄︎';
+    f.style.left = e.clientX + 'px';
+    f.style.top  = e.clientY + 'px';
+    document.body.appendChild(f);
+    f.animate([
+      { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)',     opacity: 1 },
+      { transform: 'translate(-50%, -50%) rotate(300deg) scale(1.3)', opacity: 0 }
+    ], { duration: 800, easing: 'linear' })
+     .finished.then(() => f.remove(), () => f.remove());
+  });
 
-    setTimeout(() => {
-        clearInterval(spin);
-        snow.remove();
-    }, 800);
-});
-
-/* ===== 位置管理 ===== */
-let mouseX = 0;
-let mouseY = 0;
-let snowX = 0;
-let snowY = 0;
-
-/* マウス取得 */
-document.addEventListener("mousemove", e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
-
-/* ===== カーソルアニメーション（横スクロールと分離） ===== */
-function animateCursor(){
-
-    /* 即追従 */
-    cursor.style.left = mouseX + "px";
-    cursor.style.top = mouseY + "px";
-
-    /* 遅れて追従（慣性） */
-    snowX += (mouseX - snowX) * 0.08;
-    snowY += (mouseY - snowY) * 0.08;
-
-    snow.style.left = snowX + "px";
-    snow.style.top = snowY + "px";
-
-    requestAnimationFrame(animateCursor);
-}
-
-animateCursor();
-
+  /* ================= ページの事前読み込み（HTMLページのみ。PDFは対象外） ================= */
+  const prefetched = new Set();
+  ['pointerenter', 'touchstart', 'focusin'].forEach(type =>
+    document.addEventListener(type, e => {
+      const a = e.target.closest && e.target.closest('a[href]');
+      if (!a || prefetched.has(a.href) || a.origin !== location.origin) return;
+      if (!/(\.html)?$/.test(a.pathname) || /\.pdf$/i.test(a.pathname)) return;
+      prefetched.add(a.href);
+      const l = document.createElement('link');
+      l.rel = 'prefetch';
+      l.href = a.href;
+      document.head.appendChild(l);
+    }, { passive: true, capture: true }));
+})();
 </script>
 </body>
 </html>

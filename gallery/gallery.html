@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery</title>
-
-<!-- SEO -->
+<title>Gallery | Heavenward Submarine</title>
 <meta name="description" content="Heavenward Submarine – photography and zine projects by Ko.">
 <meta name="keywords" content="photography, zine, Tokyo photography, Tokyo DJ, underground culture, photo zine, tokyo club, face records, heavenwardsubmarine">
 <meta name="author" content="Ko, HUANG MENGWEI">
+<meta name="theme-color" content="#290db7">
 
-<!-- favicon -->
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
 <link rel="icon" type="image/png" href="/favicon.png">
 
-<!-- Open Graph (SNS preview) -->
+<!-- Open Graph -->
 <meta property="og:title" content="Heavenward Submarine">
 <meta property="og:description" content="Photography and zine projects by Ko. Tokyo underground culture.">
 <meta property="og:type" content="website">
@@ -28,357 +25,253 @@
 <meta name="twitter:description" content="Photography and zine projects by Ko.">
 <meta name="twitter:image" content="https://heavenwardsubmarine.com/og-image.jpg">
 
+<link rel="preload" href="../fonts/Bespoke-MjPdRlygxs.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="../gallery/images/book-bg.webp" as="image">
+
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9ML95CZJ7V"></script>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-9ML95CZJ7V', {
-  page_path: window.location.pathname
-});
+gtag('config', 'G-9ML95CZJ7V', { page_path: window.location.pathname });
+document.documentElement.classList.add('js');
 </script>
-<script src="/js/analytics.js"></script>
+<script src="/js/analytics.js" defer></script>
 
-</head>
 <style>
-
 /* ================= フォント ================= */
-
-@font-face{
-    font-family:'Bespoke';
-    src:url('../fonts/Bespoke-MjPdRlygxs.ttf');
+@font-face {
+  font-family: 'Bespoke';
+  src: url('../fonts/Bespoke-MjPdRlygxs.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GeorgiaCustom';
+  src: url('../fonts/Courier New.ttf') format('truetype');
+  font-display: swap;
 }
 
-@font-face{
-    font-family:'GeorgiaCustom';
-    src:url('../fonts/Courier New.ttf');
-}
+:root { --ease: cubic-bezier(.22, 1, .36, 1); }
 
 /* ================= 全体 ================= */
-
-body{
-    margin:0;
-    background:#290db7;
-    font-family:'Bespoke';
-    color:white;
+body {
+  margin: 0;
+  background: #290db7;
+  font-family: 'Bespoke';
+  color: white;
+  -webkit-tap-highlight-color: transparent;
 }
-html, body, * {
-    cursor: none !important;
+html.lock { overflow: hidden; }
+
+a:focus-visible, button:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 4px;
+}
+
+/* 雪のカーソルを使うのはマウス環境のみ */
+@media (hover: hover) and (pointer: fine) {
+  html, body, a, button { cursor: none; }
 }
 
 /* ================= ロゴ ================= */
-
-.logo{
-    position:fixed;
-    top:30px;
-    left:60px;
-    padding:10px 25px;
-    border:1px solid white;
-    border-radius:40px;
-    text-decoration:none;
-    color:white;
-    z-index:100;
-    transition:0.3s ease; 
-    z-index: 10000;
+.logo {
+  position: fixed;
+  top: 30px;
+  left: 60px;
+  padding: 10px 25px;
+  border: 1px solid white;
+  border-radius: 40px;
+  text-decoration: none;
+  color: white;
+  z-index: 10000;
+  transition: color .3s ease, border-color .3s ease;
 }
-.logo:hover{
-    color:#5400fd;           
-    border-color:#5400fd;    
-}
-.logo:active{
-    color:#5400fd;
-    border-color:#5400fd;
-}
+.logo:hover, .logo:active { color: #5400fd; border-color: #5400fd; }
 
 /* ================= メニュー ================= */
+.menu-btn {
+  position: fixed;
+  top: 10px;
+  right: 50px;
+  z-index: 10000;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 40px;
+  color: white;
+  transition: color .3s ease, transform .3s var(--ease);
+}
+.menu-btn:hover { color: rgba(255,255,255,.4); transform: scale(.98); }
 
-.menu-btn{
-    position:fixed;
-    top:10px;
-    right:50px;
-    font-size:40px;
-    cursor:pointer;
-    z-index:10000;
-    color:white;
-    transition: 0.3s ease;
+.menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 100vh;
+  background: #290db7;
+  padding: 120px 60px;
+  transform: translateX(100%);
+  transition: transform .5s var(--ease);
+  z-index: 9999;
+}
+.menu.open { transform: translateX(0); }
+
+.menu a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+  margin-bottom: 40px;
+  font-family: 'Bespoke';
+  opacity: 0;
+  transform: translateX(16px);
+  transition: color .3s ease, opacity .4s ease, transform .5s var(--ease);
+}
+.menu.open a {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--i) * 50ms + .15s);
+}
+.menu.open a:hover {
+  color: rgba(255,255,255,.4);
+  transform: scale(.98);
+  transition-delay: 0s;
 }
 
-.menu-btn:hover {
-    color: rgba(255,255,255,0.4);
-    transform: scale(0.98);
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease;
+  z-index: 9000;
 }
-
-.menu{
-    position:fixed;
-    top:0;
-    right:0px;
-    width:150px;
-    height:100vh;
-    background:#290db7;
-    padding:120px 60px;
-    transform:translateX(100%);
-    transition:transform .5s ease;
-
-    z-index: 9999;
-}
-
-.menu a{
-    display:block;
-    color:rgb(255, 255, 255);
-    text-decoration:none;
-    font-size:20px;
-    margin-bottom:40px;
-    font-family:'Bespoke';
-    transition: 0.3s ease;
-}
-.menu a:hover {
-    color: rgba(255,255,255,0.4);
-    transform: scale(0.98);
-}
-
-.menu.open{
-    transform:translateX(0);
-}
-
-.overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.5);
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .4s ease;
-    z-index:9000;
-}
-
-.overlay.show{
-    opacity:1;
-    pointer-events:auto;
-}
+.overlay.show { opacity: 1; pointer-events: auto; }
 
 /* ================= 上部ビジュアル ================= */
-
-.top-visual{
-    width:80%;
-    height:90px;          
-    margin-top:2px;       /* ロゴと被らないため */
-}
-
-.top-visual img{
-    width:80%;
-    height:auto;
-    object-fit:cover;      /* 重要：トリミングして全面表示 */
-    display:block;
-}
+.top-visual { width: 80%; height: 90px; margin-top: 2px; }
+.top-visual img { width: 80%; height: auto; object-fit: cover; display: block; }
 
 /* ================= タイトル ================= */
-
-.page-title{
-    margin:30px 0 10px 10%;
-    font-size:50px;
-    font-weight:500;
-}
+.page-title { margin: 30px 0 10px 10%; font-size: 50px; font-weight: 500; }
 
 /* ================= 本 ================= */
+.book-wrapper {
+  position: relative;
+  width: min(1000px, calc(100% - 40px));
+  margin: 60px auto 120px;
+}
+.book-bg { width: 100%; height: 680px; display: block; }
 
-.book-wrapper{
-    position:relative;
-    width:1000px;   /* ← 固定 */
-    margin:60px auto 120px auto; 
+.book-inner {
+  position: absolute;
+  inset: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 80px;
+  font-family: 'GeorgiaCustom';
+  color: #3b3b3b;
 }
 
-.book-bg{
-    width:100%;
-    height: 680px;
-    display:block;
+.theme-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  margin-bottom: 3px;
+  border-bottom: .8px solid #474747;
+  text-decoration: none;
+  color: #3b3b3b;
+  font-size: 16px;
 }
+.text-block { display: flex; flex-direction: column; }
 
-/* 本の中 */
-
-.book-inner{
-    position:absolute;
-
-    inset:30px;   /* ← 四周すべて30pxの余白 */
-
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    column-gap:80px;
-
-    font-family:'GeorgiaCustom';
-    color:#3b3b3b;
+.theme-title {
+  display: inline-block;
+  text-decoration: underline;
+  transform-origin: left center;
+  transition: color .3s ease, transform .3s var(--ease);
 }
+.theme-row:hover .theme-title,
+.theme-row:focus-visible .theme-title { color: #8c8c8c; transform: scale(.98); }
 
-/* 共通テーマ行 */
-.theme-row{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    margin-bottom:3px;
-    border-bottom:0.8px solid #474747;
-    padding:5px 0;                /* 余白調整 */
-    margin-bottom:3px;            /* 間隔を縮める */
-    text-decoration:none;
-    color:#3b3b3b;
-    font-size:16px;
-    gap:10px;
+.subtitle { display: block; margin-top: 22px; font-size: 12px; line-height: 1.2; color: #666; }
+
+.theme-row img {
+  width: 150px;
+  height: 105px;
+  margin: 0 0 1px;
+  object-fit: cover;
+  transition: filter .3s ease, transform .3s var(--ease);
 }
+.theme-row:hover img { filter: brightness(60%); transform: scale(.98); }
 
-/* タイトル＋副タイトルブロック */
-.text-block{
-    display:flex;
-    flex-direction:column;
-}
+.theme-row img.face-thumb { width: min(410px, 100%); height: auto; aspect-ratio: 410 / 180; }
 
-/* 全タイトルにアンダーライン */
-.theme-title{
-    text-decoration:underline;
-    transition:0.3s ease;
-}
+.main-title-box { display: inline-block; background: #372902; color: #fff; padding: 8px 10px; margin-bottom: 60px; }
+.main-title-box h1 { font-size: 18px; letter-spacing: 1px; margin: 0; }
 
-/* テーマタイトル hover */
-.theme-row:hover .theme-title{
-    color:#8c8c8c;   /* 少し浅いグレーに */
-    transform: scale(0.98);
-}
-
-
-/* 副タイトル */
-.subtitle{
-    font-size:12px;
-    margin-top:10px;
-    line-height:1.2;
-    color:#666;
-}
-
-/* サムネ共通 */
-.theme-row img{
-    width:150px;
-    height:105px;
-    margin:0px 0px 1px 0;
-    object-fit:cover;
-    transition:0.3s ease; 
-}
-.theme-row img:hover{
-    filter:brightness(60%);  /* ← 暗くする */
-    transform: scale(0.98);
-}
-
-
-/* 左画像バージョン */
-.left-image{
-    flex-direction:row;
-}
-
-.right-image{
-    flex-direction:row;
-}
-
-.main-title-box{
-    background:#372902;
-    color:#fff;
-    padding:8px 10px;
-    display:inline-block;
-    margin-bottom:60px;
-}
-
-.main-title-box h1{
-    font-size:18px;
-    letter-spacing:1px;
-    margin:0;
-}
-
-/* 区切り線 */
-.section-line{
-    border:none;
-    border-top:0.8px solid #3e3e3e;
-    margin:-38px 0 5px 0;
-}
-
-/* FACEタイトルだけ特別 */
-
-
-.theme-row img.face-thumb{
-    width:410px !important;
-    height:180px !important;
-}
-
+.section-line { border: none; border-top: .8px solid #3e3e3e; margin: -38px 0 5px; }
 
 /* ================= ページ送り ================= */
+.pagination { text-align: center; margin-top: 1px; font-family: 'Bespoke'; }
+.page-btn {
+  display: inline-block;
+  font-size: 20px;
+  margin: 0 50px;
+  text-decoration: none;
+  color: white;
+  transition: color .3s ease, transform .3s var(--ease);
+}
+a.page-btn:hover { color: #8c8c8c; transform: scale(.98); }
+.page-number { font-size: 12px; }
 
-.pagination{
-    text-align:center;
-    margin-top:1px;
-    font-family:'Bespoke';
+/* ================= 登場アニメーション（JS有効時のみ） ================= */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .7s ease, transform .8s var(--ease);
+}
+.js .reveal.shown { opacity: 1; transform: none; }
+
+/* ================= スマホ ================= */
+@media (max-width: 768px) {
+  .logo { left: 20px; top: 20px; padding: 8px 18px; font-size: 14px; white-space: nowrap; }
+  .menu { width: 40%; padding: 120px 40px; }
+  .menu-btn { top: 17px; right: 20px; font-family: 'GeorgiaCustom'; font-size: 35px; }
+
+  .top-visual { height: 100px; margin: 10px 0 0 -20px; width: calc(100% - 30px); overflow: hidden; }
+  .top-visual img { width: 100%; height: 80%; }
+
+  .page-title { font-size: 32px; margin: 0 0 10px 5%; }
+
+  /* 本を縦1列に：背景は画面幅いっぱいに伸ばす */
+  .book-wrapper { width: auto; margin: 30px 12px 80px; }
+  .book-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+  .book-inner { position: relative; inset: auto; display: block; padding: 28px 22px 10px; }
+  .book-inner > div + div { margin-top: 24px; }
+  .theme-row img { width: 110px; height: 77px; }
+  .pagination { position: relative; padding-bottom: 24px; }
+  .page-btn { margin: 0 36px; }
 }
 
-.page-btn{
-    font-size:20px;
-    cursor:pointer;
-    margin:0 50px;
-    text-decoration:none;
-    color:white;
-    transition:0.3s ease;
+/* ================= 雪のカーソル ================= */
+.flake { position: fixed; top: 0; left: 0; color: #fff; pointer-events: none; opacity: 0; transition: opacity .3s; will-change: transform; user-select: none; }
+.flake.on { opacity: 1; }
+.flake.main  { font-size: 50px; z-index: 100000; }
+.flake.trail { font-size: 40px; z-index: 99999; }
+@media (hover: none), (pointer: coarse) { .flake.main, .flake.trail { display: none; } }
+
+.burst { position: fixed; font-size: 30px; color: #fff; pointer-events: none; z-index: 99999; will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal, .menu, .menu a { transition-duration: .01s; transition-delay: 0s !important; }
 }
-.page-btn:hover{
-    color:#8c8c8c;   /* 少し浅いグレーに */
-    transform: scale(0.98);
-}
-.page-number{
-    font-size:12px;
-}
-
-/* ================= スマホ最適化 ================= */
-
-@media screen and (max-width:768px){
-
-    .page-title{
-        font-size:32px;
-        margin:0px 0 10px 5%;
-    }
-
-    .book-inner{
-        inset:20px;       /* 余白を少し縮める */
-        column-gap:30px;  /* カラム間を狭める */
-    }
-
-    .face-thumb{
-        width:100% !important;
-        height:auto !important;
-    }
-
-    .logo{
-        left:20px;
-        top:20px;
-        padding:8px 18px;
-        font-size:14px;
-        white-space: nowrap;
-    }
-        /* メニュー幅調整 */
-    .menu{
-        width:40%;
-        padding:120px 40px;
-    }    
-    .menu-btn{
-        top:17px;
-        font-family:'GeorgiaCustom';
-        right:20px;
-        font-size:35px;   
-    }
-
-        .top-visual{
-        height:100px;                 
-        margin:10px 0px 0px -20px;
-        width:calc(100% - 30px);
-        overflow:hidden;
-    }
-
-    .top-visual img{
-        width:100%;
-        height:80%;
-    }
-
-}
-
 </style>
 </head>
 
@@ -386,230 +279,270 @@ html, body, * {
 
 <a href="../index.html" class="logo">Heavenward Submarine</a>
 
-<div class="menu-btn" onclick="toggleMenu()">≡</div>
+<button class="menu-btn" id="menuBtn" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="menu">≡</button>
 
-<div class="menu" id="menu">
-    <a href="../index.html">Heavenward Submarine</a>
-    <a href="../gallery/gallery.html">Gallery</a>
-    <a href="../NewRelease/NewRelease.html">New Release</a>
-    <a href="../About/About.html">About</a>
-    <a href="../Contact/Contact.html">Contact</a>
-</div>
+<nav class="menu" id="menu" aria-label="メインメニュー" inert>
+  <a href="../index.html" style="--i:0">Heavenward Submarine</a>
+  <a href="../gallery/gallery.html" style="--i:1" aria-current="page">Gallery</a>
+  <a href="../NewRelease/NewRelease.html" style="--i:2">New Release</a>
+  <a href="../About/About.html" style="--i:3">About</a>
+  <a href="../Contact/Contact.html" style="--i:4">Contact</a>
+</nav>
 
-<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="overlay" id="overlay"></div>
 
 <div class="top-visual">
-    <img src="../About/images/top-visual.webp" alt="">
+  <img src="../About/images/top-visual.webp" alt="">
 </div>
 
-<h1 class="page-title">Gallery</h1>
+<h1 class="page-title reveal">Gallery</h1>
 
-<div class="book-wrapper">
+<main class="book-wrapper">
 
-    <img src="../gallery/images/book-bg.webp" class="book-bg">
+  <img src="../gallery/images/book-bg.webp" class="book-bg" alt="" fetchpriority="high" decoding="async">
 
-    <div class="book-inner">
+  <div class="book-inner">
 
-        <!-- 左ページ -->
-        <div>
-            
-            <div class="main-title-box">
-                 <h1>Collection Photography</h1>
-            </div>
+    <!-- 左ページ -->
+    <div>
+      <div class="main-title-box reveal">
+        <h1>Collection Photography</h1>
+      </div>
 
-        <hr class="section-line">
+      <hr class="section-line">
 
-          <a href="../Live-in-The-Wall/Live-in-The-Wall.html" class="theme-row left-image">
-             <img src="../Live-in-The-Wall/images/サムネイル.webp">
-             <div class="text-block">
-                 <span class="theme-title">"Live in The Wall"</span>
-                 <span class="subtitle"><p><i>My Master’s Graduation Collection</br>
-                    Bunka Fashion Graduate University (BFGU, 2021)</i><p></p>
-                 </span>
-             </div>
-            </a>
-
-            
-            <a href="../FACE-book/FACE-book.html" class="theme-row face-row">
-                <img src="../FACE-book/images/サムネイル.webp" class="face-thumb">
-                <div class="text-block"></div>
-            </a>
-
-           
-            <a href="../Don’t-say-Goodnight/Don’t-say-Goodnight.html" class="theme-row left-imag">
-                <img src="../Don’t-say-Goodnight/images/サムネイル.webp">
-                <div class="text-block">
-                    <span class="theme-title">Don’t say Goodnight</span>
-                    <span class="subtitle"><p><i>Music is the key.</i><p></span>
-                </div>
-            </a>
-
-            <a href="../Ledmaynes-SS25/Ledmaynes-SS25.html" class="theme-row right-image">
-                <div class="text-block">
-                   <span class="theme-title">Ledmaynes SS25</span> 
-                    <span class="subtitle"><p><i>"recto verso"</i><p></span>
-                </div>
-                <img src="../Ledmaynes-SS25/images/サムネイル.webp">
-            </a>
-
+      <a href="../Live-in-The-Wall/Live-in-The-Wall.html" class="theme-row left-image reveal">
+        <img src="../Live-in-The-Wall/images/サムネイル.webp" alt="Live in The Wall" loading="lazy" decoding="async">
+        <div class="text-block">
+          <span class="theme-title">"Live in The Wall"</span>
+          <span class="subtitle"><i>My Master’s Graduation Collection<br>Bunka Fashion Graduate University (BFGU, 2021)</i></span>
         </div>
+      </a>
 
-        <!-- 右ページ -->
-        <div>
+      <a href="../FACE-book/FACE-book.html" class="theme-row face-row reveal">
+        <img src="../FACE-book/images/サムネイル.webp" class="face-thumb" alt="FACE book" loading="lazy" decoding="async">
+        <div class="text-block"></div>
+      </a>
 
-            <a href="../Carols実験/Carols実験.html" class="theme-row right-image">
-               <div class="text-block">
-                 <span class="theme-title">Carols実験</span>
-               </div>
-               <img src="../Carols実験/images/サムネイル.webp">
-           </a>
-
-            <a href="../HangZhou-Portrait/HangZhou-Portrait.html" class="theme-row left-image">
-              <img src="../HangZhou-Portrait/images/サムネイル.webp">
-              <div class="text-block">
-                  <span class="theme-title">HangZhou Portrait</span>
-                  <span class="subtitle"><p><i>Always on journey with my friend.</i><p></span>
-              </div>
-           </a>
-
-            <a href="../Red/Red.html" class="theme-row right-image">
-               <div class="text-block">
-                  <span class="theme-title">Red</span>
-              </div>
-              <img src="../Red/images/サムネイル.webp">
-           </a>
-
-           <a href="../Downward-is-Heavenward/Downward-is-Heavenward.html" class="theme-row left-image">
-              <img src="../Downward-is-Heavenward/images/サムネイル.webp">
-              <div class="text-block">
-                 <span class="theme-title">*Downward is Heavenward*</span>
-                 <span class="subtitle"><p><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:</br>
-                    {“A dusty sleep you took too soon,”:</br>
-                    {“and you need watering if you are to bloom.}}</i><p></p></span>
-              </div>
-           </a>
-
-           <a href="../GoforYourGuns/GoforYourGuns.html" class="theme-row right-image">
-              <div class="text-block">
-                 <span class="theme-title">Go for Your Guns</span>
-             </div>
-             <img src="../GoforYourGuns/images/サムネイル.webp">
-           </a>
-
+      <a href="../Don’t-say-Goodnight/Don’t-say-Goodnight.html" class="theme-row left-image reveal">
+        <img src="../Don’t-say-Goodnight/images/サムネイル.webp" alt="Don’t say Goodnight" loading="lazy" decoding="async">
+        <div class="text-block">
+          <span class="theme-title">Don’t say Goodnight</span>
+          <span class="subtitle"><i>Music is the key.</i></span>
         </div>
+      </a>
 
+      <a href="../Ledmaynes-SS25/Ledmaynes-SS25.html" class="theme-row right-image reveal">
+        <div class="text-block">
+          <span class="theme-title">Ledmaynes SS25</span>
+          <span class="subtitle"><i>"recto verso"</i></span>
+        </div>
+        <img src="../Ledmaynes-SS25/images/サムネイル.webp" alt="Ledmaynes SS25" loading="lazy" decoding="async">
+      </a>
     </div>
 
-    <div class="pagination">
-         <span class="page-btn">«</span>
-         <span class="page-number">1 / 2</span>
-         <a href="gallery-page2.html" class="page-btn">»</a>
+    <!-- 右ページ -->
+    <div>
+      <a href="../Carols実験/Carols実験.html" class="theme-row right-image reveal">
+        <div class="text-block">
+          <span class="theme-title">Carols実験</span>
+        </div>
+        <img src="../Carols実験/images/サムネイル.webp" alt="Carols実験" loading="lazy" decoding="async">
+      </a>
+
+      <a href="../HangZhou-Portrait/HangZhou-Portrait.html" class="theme-row left-image reveal">
+        <img src="../HangZhou-Portrait/images/サムネイル.webp" alt="HangZhou Portrait" loading="lazy" decoding="async">
+        <div class="text-block">
+          <span class="theme-title">HangZhou Portrait</span>
+          <span class="subtitle"><i>Always on journey with my friend.</i></span>
+        </div>
+      </a>
+
+      <a href="../Red/Red.html" class="theme-row right-image reveal">
+        <div class="text-block">
+          <span class="theme-title">Red</span>
+        </div>
+        <img src="../Red/images/サムネイル.webp" alt="Red" loading="lazy" decoding="async">
+      </a>
+
+      <a href="../Downward-is-Heavenward/Downward-is-Heavenward.html" class="theme-row left-image reveal">
+        <img src="../Downward-is-Heavenward/images/サムネイル.webp" alt="Downward is Heavenward" loading="lazy" decoding="async">
+        <div class="text-block">
+          <span class="theme-title">*Downward is Heavenward*</span>
+          <span class="subtitle"><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:<br>{“A dusty sleep you took too soon,”:<br>{“and you need watering if you are to bloom.}}</i></span>
+        </div>
+      </a>
+
+      <a href="../GoforYourGuns/GoforYourGuns.html" class="theme-row right-image reveal">
+        <div class="text-block">
+          <span class="theme-title">Go for Your Guns</span>
+        </div>
+        <img src="../GoforYourGuns/images/サムネイル.webp" alt="Go for Your Guns" loading="lazy" decoding="async">
+      </a>
     </div>
 
-    
-</div>
+  </div>
 
+  <div class="pagination reveal">
+    <span class="page-btn" aria-disabled="true">«</span>
+    <span class="page-number">1 / 2</span>
+    <a href="gallery-page2.html" class="page-btn" aria-label="次のページ">»</a>
+  </div>
 
+</main>
 
 <script>
+(() => {
+  const fine   = matchMedia('(hover: hover) and (pointer: fine)');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const wait   = ms => new Promise(r => setTimeout(r, ms));
 
-/* ===== メニュー ===== */
-function toggleMenu(){
-    document.getElementById("menu").classList.toggle("open");
-    document.getElementById("overlay").classList.toggle("show");
-}
+  /* ================= メニュー ================= */
+  const menu = document.getElementById('menu');
+  const overlay = document.getElementById('overlay');
+  const menuBtn = document.getElementById('menuBtn');
 
-/* ===== カーソル非表示 ===== */
-document.body.style.cursor = "none";
-document.documentElement.style.cursor = "none";
+  function setMenu(open, returnFocus) {
+    menu.classList.toggle('open', open);
+    overlay.classList.toggle('show', open);
+    menu.inert = !open;
+    document.documentElement.classList.toggle('lock', open);
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+    if (open) menu.querySelector('a').focus({ preventScroll: true });
+    else if (returnFocus) menuBtn.focus();
+  }
+  menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('open')));
+  overlay.addEventListener('click', () => setMenu(false));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menu.classList.contains('open')) setMenu(false, true);
+  });
 
-/* ===== カーソル本体 ===== */
-const cursor = document.createElement("div");
-cursor.innerHTML = "❄︎";
-cursor.style.position = "fixed";
-cursor.style.pointerEvents = "none";
-cursor.style.fontSize = "50px";
-cursor.style.color = "white";
-cursor.style.zIndex = "100000";
-cursor.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(cursor);
+  /* ================= 登場アニメーション ================= */
+  Promise.race([document.fonts ? document.fonts.ready : 0, wait(400)]).then(startReveal);
 
-/* ===== 遅れて動く雪 ===== */
-const snow = document.createElement("div");
-snow.innerHTML = "❄︎";
-snow.style.position = "fixed";
-snow.style.pointerEvents = "none";
-snow.style.fontSize = "40px";
-snow.style.color = "white";
-snow.style.zIndex = "99999";
-snow.style.transform = "translate(-50%, -50%)";
-document.body.appendChild(snow);
+  function startReveal() {
+    const items = document.querySelectorAll('.reveal');
+    if (reduce.matches || !('IntersectionObserver' in window)) {
+      items.forEach(el => el.classList.add('shown'));
+      return;
+    }
+    let batch = 0;
+    const io = new IntersectionObserver(entries => {
+      batch = 0;
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.style.transitionDelay = (batch++ * 70) + 'ms'; // 順番にふわっと
+        en.target.classList.add('shown');
+        io.unobserve(en.target);
+      });
+    }, { threshold: .1 });
+    items.forEach(el => io.observe(el));
+  }
 
-/* ===== クリック回転 ===== */
-let enableClickSpin = true;
+  /* ================= 雪のカーソル ================= */
+  const main  = makeFlake('main');
+  const trail = makeFlake('trail');
+  function makeFlake(type) {
+    const el = document.createElement('div');
+    el.className = 'flake ' + type;
+    el.textContent = '❄︎';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+    return el;
+  }
 
-document.addEventListener("click", e => {
+  let mx = 0, my = 0, tx = 0, ty = 0;
+  let scale = 1, scaleTarget = 1, spin = 0;
+  let running = false, last = 0, shown = false;
 
-    if(!enableClickSpin) return;
+  function place(el, x, y, s, r) {
+    el.style.transform =
+      `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${s}) rotate(${r}deg)`;
+  }
 
-    const snow = document.createElement("div");
-    snow.innerHTML = "❄︎";
-    snow.style.position = "fixed";
-    snow.style.left = e.clientX + "px";
-    snow.style.top = e.clientY + "px";
-    snow.style.fontSize = "30px";
-    snow.style.color = "white";
-    snow.style.pointerEvents = "none";
-    snow.style.zIndex = "99999";
-    snow.style.transform = "translate(-50%, -50%)";
-    document.body.appendChild(snow);
+  function frame(now) {
+    const dt = Math.min(now - last, 50) || 16;
+    last = now;
+    const k = reduce.matches ? 1 : 1 - Math.pow(1 - 0.3, dt / 16.67);
 
-    let rotation = 0;
+    const dx = mx - tx, dy = my - ty;
+    tx += dx * k;
+    ty += dy * k;
+    scale += (scaleTarget - scale) * Math.min(1, dt / 90);
+    spin += (dx + dy) * 0.02 * (dt / 16.67);
 
-    const spin = setInterval(() => {
-        rotation += 6;
-        snow.style.transform =
-            "translate(-50%, -50%) rotate(" + rotation + "deg)";
-    }, 16);
+    place(main, mx, my, scale, 0);
+    place(trail, tx, ty, 1, reduce.matches ? 0 : spin);
 
-    setTimeout(() => {
-        clearInterval(spin);
-        snow.remove();
-    }, 800);
-});
+    const settled = Math.abs(dx) < .1 && Math.abs(dy) < .1 && Math.abs(scaleTarget - scale) < .005;
+    if (settled) { running = false; return; }
+    requestAnimationFrame(frame);
+  }
+  function kick() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(frame);
+  }
 
-/* ===== 位置管理 ===== */
-let mouseX = 0;
-let mouseY = 0;
-let snowX = 0;
-let snowY = 0;
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !fine.matches) return;
+    mx = e.clientX; my = e.clientY;
+    if (!shown) {
+      shown = true;
+      tx = mx; ty = my;
+      main.classList.add('on');
+      trail.classList.add('on');
+    }
+    kick();
+  }, { passive: true });
 
-/* マウス取得 */
-document.addEventListener("mousemove", e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
+  document.documentElement.addEventListener('mouseleave', () => {
+    main.classList.remove('on'); trail.classList.remove('on'); shown = false;
+  });
 
-/* ===== カーソルアニメーション（横スクロールと分離） ===== */
-function animateCursor(){
+  // リンク・ボタン上では雪が大きくなる
+  document.addEventListener('pointerover', e => {
+    if (e.pointerType !== 'mouse') return;
+    scaleTarget = e.target.closest('a, button') ? 1.4 : 1;
+    kick();
+  });
 
-    /* 即追従 */
-    cursor.style.left = mouseX + "px";
-    cursor.style.top = mouseY + "px";
+  /* ================= クリックで雪が舞う ================= */
+  document.addEventListener('click', e => {
+    if (reduce.matches) return;
+    const f = document.createElement('div');
+    f.className = 'burst';
+    f.textContent = '❄︎';
+    f.style.left = e.clientX + 'px';
+    f.style.top  = e.clientY + 'px';
+    document.body.appendChild(f);
+    f.animate([
+      { transform: 'translate(-50%, -50%) rotate(0deg) scale(1)',     opacity: 1 },
+      { transform: 'translate(-50%, -50%) rotate(300deg) scale(1.3)', opacity: 0 }
+    ], { duration: 800, easing: 'linear' })
+     .finished.then(() => f.remove(), () => f.remove());
+  });
 
-    /* 遅れて追従（慣性） */
-    snowX += (mouseX - snowX) * 0.08;
-    snowY += (mouseY - snowY) * 0.08;
+  /* ================= リンク：事前読み込み ================= */
+  const prefetched = new Set();
+  function prefetch(a) {
+    if (!a || prefetched.has(a.href) || a.origin !== location.origin) return;
+    prefetched.add(a.href);
+    const l = document.createElement('link');
+    l.rel = 'prefetch';
+    l.href = a.href;
+    document.head.appendChild(l);
+  }
+  ['pointerenter', 'touchstart', 'focusin'].forEach(type =>
+    document.addEventListener(type, e => prefetch(e.target.closest && e.target.closest('a[href]')),
+      { passive: true, capture: true }));
 
-    snow.style.left = snowX + "px";
-    snow.style.top = snowY + "px";
-
-    requestAnimationFrame(animateCursor);
-}
-
-animateCursor();
-
-
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) setMenu(false);
+  });
+})();
 </script>
 
 </body>
