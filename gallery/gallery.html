@@ -26,7 +26,6 @@
 <meta name="twitter:image" content="https://heavenwardsubmarine.com/og-image.jpg">
 
 <link rel="preload" href="../fonts/Bespoke-MjPdRlygxs.ttf" as="font" type="font/ttf" crossorigin>
-<link rel="preload" href="../gallery/images/book-bg.webp" as="image">
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9ML95CZJ7V"></script>
@@ -156,109 +155,157 @@ a:focus-visible, button:focus-visible {
 .top-visual { width: 80%; height: 90px; margin-top: 2px; }
 .top-visual img { width: 80%; height: auto; object-fit: cover; display: block; }
 
-/* ================= タイトル ================= */
-.page-title { margin: 30px 0 10px 10%; font-size: 50px; font-weight: 500; }
 
-/* ================= 本 ================= */
-.book-wrapper {
-  position: relative;
-  width: min(1000px, calc(100% - 40px));
-  margin: 60px auto 120px;
+/* ================= 上部ビジュアル（元の仕様のまま。ページの高さには影響しないよう上に重ねる） ================= */
+.top-visual { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
+
+/* ================= Gallery：潜水艦の窓 ================= */
+:root {
+  --k: max(calc(100vh / 940), .76px);           /* 1デザイン単位（≒1px）。画面の高さに合わせて全体が拡大縮小 */
+  --ink: #000;                                    /* 潜水艦の線・窓枠の色 */
+  --cream: #f4ecd8;
+  --cream-dim: #b4afa0;                           /* クリーム色 × 画像と同じ brightness(.74) */
+  --start: 407;                                  /* 最初に見せる位置（艦尾を左の外へ） */
+  --shift: 75;                                  /* 潜水艦ごとコンテンツ全体を下げる量（デザイン単位）。赤線＝最上部の要素の新しい基準位置 */
+  --snowh: max(120px, calc(120 * var(--k)));     /* ページ最下部の雪エリアの高さ */
 }
-.book-bg { width: 100%; height: 680px; display: block; }
-
-.book-inner {
-  position: absolute;
-  inset: 30px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 80px;
-  font-family: 'GeorgiaCustom';
-  color: #3b3b3b;
-}
-
-.theme-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 5px 0;
-  margin-bottom: 3px;
-  border-bottom: .8px solid #474747;
-  text-decoration: none;
-  color: #3b3b3b;
-  font-size: 16px;
-}
-.text-block { display: flex; flex-direction: column; }
-
-.theme-title {
-  display: inline-block;
-  text-decoration: underline;
-  transform-origin: left center;
-  transition: color .3s ease, transform .3s var(--ease);
-}
-.theme-row:hover .theme-title,
-.theme-row:focus-visible .theme-title { color: #8c8c8c; transform: scale(.98); }
-
-.subtitle { display: block; margin-top: 22px; font-size: 12px; line-height: 1.2; color: #666; }
-
-.theme-row img {
-  width: 150px;
-  height: 105px;
-  margin: 0 0 1px;
-  object-fit: cover;
-  transition: filter .3s ease, transform .3s var(--ease);
-}
-.theme-row:hover img { filter: brightness(60%); transform: scale(.98); }
-
-.theme-row img.face-thumb { width: min(410px, 100%); height: auto; aspect-ratio: 410 / 180; }
-
-.main-title-box { display: inline-block; background: #372902; color: #fff; padding: 8px 10px; margin-bottom: 60px; }
-.main-title-box h1 { font-size: 18px; letter-spacing: 1px; margin: 0; }
-
-.section-line { border: none; border-top: .8px solid #3e3e3e; margin: -38px 0 5px; }
-
-/* ================= ページ送り ================= */
-.pagination { text-align: center; margin-top: 1px; font-family: 'Bespoke'; }
-.page-btn {
-  display: inline-block;
-  font-size: 20px;
-  margin: 0 50px;
-  text-decoration: none;
-  color: white;
-  transition: color .3s ease, transform .3s var(--ease);
-}
-a.page-btn:hover { color: #8c8c8c; transform: scale(.98); }
-.page-number { font-size: 12px; }
-
-/* ================= 登場アニメーション（JS有効時のみ） ================= */
-.js .reveal {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity .7s ease, transform .8s var(--ease);
-}
-.js .reveal.shown { opacity: 1; transform: none; }
-
-/* ================= スマホ ================= */
+@supports (height: 100svh) { :root { --k: max(calc(100svh / 940), .76px); } }
 @media (max-width: 768px) {
-  .logo { left: 20px; top: 20px; padding: 8px 18px; font-size: 14px; white-space: nowrap; }
-  .menu { width: 40%; padding: 120px 40px; }
-  .menu-btn { top: 17px; right: 20px; font-family: 'GeorgiaCustom'; font-size: 35px; }
+  :root { --k: max(calc(100vh / 940), .76px); --start: 560; }
+  @supports (width: 100svw) { :root { --k: max(min(calc(100svh / 940), calc(100svw / 470)), .76px); } }
+}
 
+.sea { position: relative; min-height: 100vh; height: calc((940 + var(--shift)) * var(--k) + var(--snowh)); }
+.stage { position: relative; height: 100%; overflow: hidden; }
+@supports (height: 100svh) { .sea { min-height: 100svh; } }
+
+.page-title {
+  /* Contactページのタイトルと同じ位置・同じ大きさ（画面への固定表示は維持） */
+  position: fixed; z-index: 7; margin: 0; pointer-events: none;
+  left: 120px; top: 122px;
+  font-size: 50px; font-weight: 500; line-height: normal; color: #fff; white-space: nowrap;
+}
+@media (max-width: 768px) { .page-title { left: 6%; top: 110px; font-size: 32px; } }
+
+/* 横スクロールの本体（マウスのドラッグ／タッチ／トラックパッド／キー） */
+.viewport {
+  position: absolute; inset: 0; z-index: 3; display: flex; align-items: flex-start;
+  box-sizing: border-box; padding-top: calc(var(--shift) * var(--k));
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none; overscroll-behavior-x: contain; outline: none;
+  -webkit-overflow-scrolling: touch;
+}
+.viewport::-webkit-scrollbar { display: none; }
+.track { position: relative; flex: none; width: calc(var(--w, 3280) * var(--k)); height: calc(940 * var(--k)); user-select: none; -webkit-user-select: none; }
+.scene { position: absolute; inset: 0; }
+
+/* 潜水艦：図面のような細い線（主線＋補助線） */
+.sub { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.sub * { fill: none; stroke: var(--ink); stroke-linecap: round; stroke-linejoin: round; }
+.sub .o { stroke-width: 4; }                           /* 外形線 */
+.sub .t { stroke-width: 1.8; }                         /* 細線 */
+.sub .h { stroke-width: 1.2; opacity: .75; }           /* 補助線 */
+.sub .axis { stroke-width: 1.3; stroke-dasharray: 28 7 4 7; opacity: .85; }   /* 中心線（一点鎖線） */
+.sub text { fill: var(--ink); stroke: none; font-family: 'GeorgiaCustom', 'Courier New', monospace; font-size: 15px; letter-spacing: .12em; text-anchor: middle; }
+
+/* 窓（ポートホール）：1つ＝1プロジェクト。文字は元のサイズ感で全部入る */
+.win {
+  position: absolute; display: block; text-decoration: none; color: #3b3b3b; font-family: 'GeorgiaCustom', 'Courier New', monospace;
+  left: calc((640 + (var(--c) - 1) * 490) * var(--k));
+  top:  calc((355 + var(--r) * 220) * var(--k));
+  width: calc(440 * var(--k)); height: calc(190 * var(--k));
+}
+.porthole {
+  position: absolute; inset: 0; display: flex; overflow: hidden;
+  background: var(--cream);
+  border: max(3px, calc(4.5 * var(--k))) solid var(--ink);
+  border-radius: calc(62 * var(--k));
+  transition: transform .5s var(--ease);
+}
+.win.right .porthole { flex-direction: row-reverse; }
+.porthole img { flex: none; width: calc(var(--img, 250) * var(--k)); height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; filter: brightness(.74); transition: filter .5s ease; }
+.win.wide .porthole img { width: 100%; }
+.txt {
+  flex: 1; min-width: 0; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: center;
+  padding: calc(14 * var(--k)) calc(16 * var(--k)); overflow-wrap: anywhere;
+  background-color: var(--cream-dim); transition: background-color .5s ease;
+}
+.theme-title { font-size: calc(16 * var(--k) * var(--ts, 1)); line-height: 1.15; text-decoration: underline; transition: color .3s ease; }
+.subtitle { margin-top: calc(8 * var(--k)); font-size: calc(12 * var(--k) * var(--ts, 1)); line-height: 1.25; color: #666; }
+.win.long .theme-title { font-size: calc(15 * var(--k) * var(--ts, 1)); }
+.win.long .subtitle { font-size: calc(11 * var(--k) * var(--ts, 1)); }
+/* ガラスの艶 */
+.glare { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0) 40%); }
+.glare::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,.6) 48%, rgba(255,255,255,.15) 55%, transparent 63%);
+  transform: translateX(-130%); transition: transform .9s var(--ease);
+}
+.win:hover .porthole, .win:focus-visible .porthole { transform: scale(1.03); }
+.win:hover .glare::after, .win:focus-visible .glare::after { transform: translateX(130%); }
+.win:hover img, .win:focus-visible img { filter: brightness(1); }
+.win:hover .txt, .win:focus-visible .txt { background-color: var(--cream); }
+@media (hover: none) { :root { --cream-dim: #d7d0be; } .porthole img { filter: brightness(.88); } }   /* タッチ端末はホバーがないため、暗さを控えめに（画像と同じ .88） */
+.win:hover .theme-title, .win:focus-visible .theme-title { color: #8c8c8c; }
+.win.more .porthole { background-color: var(--cream-dim); transition: transform .5s var(--ease), background-color .5s ease; }
+.win.more:hover .porthole, .win.more:focus-visible .porthole { background-color: var(--cream); }
+.win.more .porthole { align-items: center; justify-content: center; font-family: 'Bespoke'; color: rgb(4,0,219); font-size: calc(28 * var(--k)); letter-spacing: .1em; }
+
+/* About：泡（シンプル） */
+.about-bubble {
+  position: absolute; z-index: 4; display: grid; place-items: center; text-decoration: none;
+  left: calc(var(--ax) * var(--k)); top: calc(183 * var(--k)); width: calc(84 * var(--k)); height: calc(80 * var(--k));
+  border-radius: 50%; font-family: 'Bespoke'; font-size: calc(20 * var(--k));
+  color: #5400fd; background-color: #fff0cd;
+  border: max(3px, calc(4.5 * var(--k))) solid var(--ink);
+  animation: float 5.5s ease-in-out infinite;
+  transition: background-color .45s ease, color .45s ease, scale .45s var(--ease);
+}
+.about-bubble:hover, .about-bubble:focus-visible, .about-bubble:active { background-color: #5400fd; color: #fff0cd;scale: 1.08; outline: none; }
+@keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 calc(-9 * var(--k)); } }
+
+/* ヒント */
+.hint {
+  position: fixed; right: 40px; bottom: 18px; z-index: 7; pointer-events: none; white-space: nowrap;
+  color: rgba(255,255,255,.88); font-size: max(11px, calc(14 * var(--k))); letter-spacing: .08em; transition: opacity .6s ease;
+}
+.hint.off { opacity: 0; }
+
+/* 登場アニメーション（JS有効時のみ） */
+.js .win, .js .about-bubble { opacity: 0; }
+.js .win { transform: translateY(14px); transition: opacity .8s ease, transform .9s var(--ease); }
+.js .win.shown { opacity: 1; transform: none; }
+.js .about-bubble { transition: opacity .8s ease, background-color .45s ease, color .45s ease, scale .45s var(--ease); }
+.js .about-bubble.shown { opacity: 1; }
+
+a:focus-visible { outline-offset: 4px; }
+
+.sub .view { animation: viewFloat 6.4s ease-in-out infinite; }
+.sub .view.v2 { animation-duration: 5.3s; animation-delay: -2.1s; }
+@keyframes viewFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sf i { animation: none; }
+  .sub .view { animation: none; }
+  .about-bubble { animation: none; }
+  .glare::after { transition-duration: .01s; }
+}
+
+/* ===== 上部ビジュアル：スマホ（元の設定のまま） ===== */
+@media screen and (max-width: 768px) {
   .top-visual { height: 100px; margin: 10px 0 0 -20px; width: calc(100% - 30px); overflow: hidden; }
   .top-visual img { width: 100%; height: 80%; }
-
-  .page-title { font-size: 32px; margin: 0 0 10px 5%; }
-
-  /* 本を縦1列に：背景は画面幅いっぱいに伸ばす */
-  .book-wrapper { width: auto; margin: 30px 12px 80px; }
-  .book-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
-  .book-inner { position: relative; inset: auto; display: block; padding: 28px 22px 10px; }
-  .book-inner > div + div { margin-top: 24px; }
-  .theme-row img { width: 110px; height: 77px; }
-  .pagination { position: relative; padding-bottom: 24px; }
-  .page-btn { margin: 0 36px; }
 }
+
+/* ================= 画面全体の降雪（控えめ・操作を妨げない） ================= */
+.snowfall { position: fixed; inset: 0; z-index: 99998; pointer-events: none; overflow: hidden;   /* 最前面（カーソルの雪のすぐ下）。操作は通過 */ }
+.sfall { position: absolute; left: 0; top: 0; width: 1em; height: 1em; font-size: 35px; line-height: 1; text-align: center; color: #fff; opacity: 0; pointer-events: none; user-select: none; -webkit-user-select: none; will-change: transform, opacity; }
+
+/* ================= ページ最下部の雪 ================= */
+.snowbed { position: absolute; left: 0; right: 0; bottom: 0; height: var(--snowh); z-index: 5; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.sf { position: absolute; bottom: 8px; width: 1em; height: 1em; margin-left: -.5em; font-size: 25px; line-height: 1; color: #fff; will-change: transform; }
+.sf i { display: block; width: 100%; height: 100%; text-align: center; font-style: normal; animation: sfspin var(--d, 24s) linear var(--del, 0s) infinite var(--dir, normal); }
+@keyframes sfspin { to { transform: rotate(360deg); } }
 
 /* ================= 雪のカーソル ================= */
 .flake { position: fixed; top: 0; left: 0; color: #fff; pointer-events: none; opacity: 0; transition: opacity .3s; will-change: transform; user-select: none; }
@@ -276,6 +323,8 @@ a.page-btn:hover { color: #8c8c8c; transform: scale(.98); }
 </head>
 
 <body>
+<!-- 画面全体にゆっくり降る雪（最前面・操作は通過。JSで生成） -->
+<div class="snowfall" id="snowfall" aria-hidden="true"></div>
 
 <a href="../index.html" class="logo">Heavenward Submarine</a>
 
@@ -292,103 +341,136 @@ a.page-btn:hover { color: #8c8c8c; transform: scale(.98); }
 <div class="overlay" id="overlay"></div>
 
 <div class="top-visual">
-  <img src="../About/images/top-visual.webp" alt="">
+    <img src="../About/images/top-visual.webp" alt="">
 </div>
 
-<h1 class="page-title reveal">Gallery</h1>
+<main class="sea">
+  <div class="stage">
 
-<main class="book-wrapper">
+    <h1 class="page-title">Gallery</h1>
 
-  <img src="../gallery/images/book-bg.webp" class="book-bg" alt="" fetchpriority="high" decoding="async">
+    <div class="viewport" id="viewport" tabindex="0" role="region" aria-label="Gallery（横にスクロールできます）">
+      <div class="track" style="--w:2790">
+        <div class="scene">
+          <svg class="sub" viewBox="0 0 2790 940" aria-hidden="true" focusable="false">
+          <!-- 中心線 -->
+          <path class="axis" d="M0 560 H2760"/>
+          <!-- 艦尾（ゆるやかに細くなる船体・十字舵・推進器シュラウド） -->
+          <path class="o" d="M660 302 C430 326 230 488 96 508"/>
+          <path class="o" d="M660 818 C430 794 230 632 96 612"/>
+          <path class="t" d="M96 508 V612"/>
+          <path class="o" d="M96 508 L84 486 L22 486 L22 634 L84 634 L96 612"/>
+          <path class="t" d="M84 486 V634 M22 530 L84 540 M22 590 L84 580 M22 560 H8"/>
+          <path class="o" d="M432 366 L442 236 L520 236 C564 242 562 296 596 312"/>
+          <path class="t" d="M480 244 V328 M494 246 L504 282"/>
+          <path class="o" d="M432 754 L442 884 L520 884 C564 878 562 824 596 808"/>
+          <path class="t" d="M480 876 V792 M494 874 L504 838"/>
+          <ellipse class="t" cx="400" cy="560" rx="46" ry="7"/>
+          <rect class="t" x="478" y="553" width="24" height="14" rx="2"/>
+          <path class="h" d="M250 560 H340 M300 553 V567 M560 548 V572"/>
+          <!-- 船体の本体（窓の領域）：+200 移動して配置 -->
+          <g transform="translate(200 0)">
+            <path class="h" d="M470 316 C801 306 1416 302 2110 308"/>
+            <path class="h" d="M470 804 C801 814 1416 818 2110 812"/>
+            <path class="h" d="M420 322 V798"/>
+            <path class="h" d="M2390 366 V754"/>
+            <path class="o" d="M460 302 C634 291 1214 285 1760 291 L2110 294 C2350 298 2530 420 2530 560 C2530 700 2350 822 2110 826 L1760 829 C1214 835 634 829 460 818"/>
+            <!-- 艦橋（セイル）とマスト -->
+            <g transform="translate(0 0)">
+              <path class="o" d="M930 291 C944 262 962 242 992 238 L1072 236 C1100 236 1116 262 1134 289"/>
+              <path class="t" d="M1000 238 V156 M1030 237 V132 M1062 236 V172 M1018 152 H1042 M1048 196 H1076"/>
+              <circle class="t" cx="1030" cy="125" r="6"/>
+              <rect class="t" x="958" y="254" width="22" height="16" rx="3"/>
+              <rect class="t" x="992" y="254" width="22" height="16" rx="3"/>
+              <path class="h" d="M944 280 H1120"/>
+            </g>
+            <!-- 正面・背面図（ふわふわ浮く） -->
+            <g class="view v1">
+              <circle class="t" cx="1586" cy="205" r="56"/><circle class="t" cx="1586" cy="205" r="24"/><circle class="h" cx="1586" cy="205" r="14"/>
+              <path class="t" d="M1492 198 H1531 M1492 206 H1531 M1492 198 V206 M1641 198 H1680 M1641 206 H1680 M1680 198 V206 M1579 150 V104 M1593 150 V104 M1579 104 H1593 M1586 104 V62"/>
+              <path class="h" d="M1546 168 Q1586 150 1626 168"/>
+            </g>
+            <g class="view v2">
+              <circle class="t" cx="1786" cy="205" r="56"/>
+              <path class="t" d="M1692 198 H1731 M1692 206 H1731 M1692 198 V206 M1841 198 H1880 M1841 206 H1880 M1880 198 V206 M1778 150 V120 H1794 V150 M1786 120 V74"/>
+              <path class="h" d="M1746 168 Q1786 150 1826 168"/>
+            </g>
+            <!-- 寸法線と窓の番号 -->
+            <path class="h" d="M440 868 H2350 M440 858 V878 M2350 858 V878"/>
+            <path class="h" d="M660 861 V875"/>
+            <text x="660" y="893">01</text>
+            <path class="h" d="M1150 861 V875"/>
+            <text x="1150" y="893">02</text>
+            <path class="h" d="M1640 861 V875"/>
+            <text x="1640" y="893">03</text>
+            <path class="h" d="M2130 861 V875"/>
+            <text x="2130" y="893">04</text>
+          </g>
+        </svg>
 
-  <div class="book-inner">
+          <a class="win" href="../Live-in-The-Wall/Live-in-The-Wall.html" style="--c:1;--r:0;--img:215" aria-label="Live in The Wall">
+            <span class="porthole">
+              <img src="../Live-in-The-Wall/images/サムネイル.webp" alt="Live in The Wall" loading="lazy" decoding="async" draggable="false">
+              <span class="txt"><span class="theme-title">"Live in The Wall"</span><span class="subtitle"><i>My Master’s Graduation Collection<br>Bunka Fashion Graduate University (BFGU, 2021)</i></span></span>
+              <span class="glare"></span>
+            </span>
+          </a>
+          <a class="win right" href="../GoforYourGuns/GoforYourGuns.html" style="--c:1;--r:1;--img:270" aria-label="Go for Your Guns">
+            <span class="porthole">
+              <img src="../GoforYourGuns/images/サムネイル.webp" alt="Go for Your Guns" loading="lazy" decoding="async" draggable="false">
+              <span class="txt"><span class="theme-title">Go for Your Guns</span></span>
+              <span class="glare"></span>
+            </span>
+          </a>
+          <a class="win wide" href="../FACE-book/FACE-book.html" style="--c:2;--r:0;--img:250" aria-label="FACE book">
+            <span class="porthole">
+              <img src="../FACE-book/images/サムネイル.webp" alt="FACE book" loading="lazy" decoding="async" draggable="false">
+              
+              <span class="glare"></span>
+            </span>
+          </a>
+          <a class="win right" href="../Ledmaynes-SS25/Ledmaynes-SS25.html" style="--c:2;--r:1;--img:260" aria-label="Ledmaynes SS25">
+            <span class="porthole">
+              <img src="../Ledmaynes-SS25/images/サムネイル.webp" alt="Ledmaynes SS25" loading="lazy" decoding="async" draggable="false">
+              <span class="txt"><span class="theme-title">Ledmaynes SS25</span><span class="subtitle"><i>"recto verso"</i></span></span>
+              <span class="glare"></span>
+            </span>
+          </a>
+          <a class="win long" href="../Downward-is-Heavenward/Downward-is-Heavenward.html" style="--c:3;--r:0;--img:185" aria-label="Downward is Heavenward">
+            <span class="porthole">
+              <img src="../Downward-is-Heavenward/images/サムネイル.webp" alt="Downward is Heavenward" loading="lazy" decoding="async" draggable="false">
+              <span class="txt"><span class="theme-title">*Downward is Heavenward*</span><span class="subtitle"><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:<br>{“A dusty sleep you took too soon,”:<br>{“and you need watering if you are to bloom.}}</i></span></span>
+              <span class="glare"></span>
+            </span>
+          </a>
+          <a class="win right" href="../Carols実験/Carols実験.html" style="--c:3;--r:1;--img:270" aria-label="Carols実験">
+            <span class="porthole">
+              <img src="../Carols実験/images/サムネイル.webp" alt="Carols実験" loading="lazy" decoding="async" draggable="false">
+              <span class="txt"><span class="theme-title">Carols実験</span></span>
+              <span class="glare"></span>
+            </span>
+          </a>
+          <a class="win" href="../HangZhou-Portrait/HangZhou-Portrait.html" style="--c:4;--r:0;--img:235" aria-label="HangZhou Portrait">
+            <span class="porthole">
+              <img src="../HangZhou-Portrait/images/サムネイル.webp" alt="HangZhou Portrait" loading="lazy" decoding="async" draggable="false">
+              <span class="txt"><span class="theme-title">HangZhou Portrait</span><span class="subtitle"><i>Always on journey with my friend.</i></span></span>
+              <span class="glare"></span>
+            </span>
+          </a>
+          <a class="win more" href="gallery-page2.html" style="--c:4;--r:1" aria-label="次のページ（2ページ目）">
+            <span class="porthole"><span>1 / 2&nbsp;&nbsp;»</span><span class="glare"></span></span>
+          </a>
 
-    <!-- 左ページ -->
-    <div>
-      <div class="main-title-box reveal">
-        <h1>Collection Photography</h1>
+          <a class="about-bubble" href="../About/About.html" style="--ax:1463" aria-label="About">About</a>
+        </div>
       </div>
-
-      <hr class="section-line">
-
-      <a href="../Live-in-The-Wall/Live-in-The-Wall.html" class="theme-row left-image reveal">
-        <img src="../Live-in-The-Wall/images/サムネイル.webp" alt="Live in The Wall" loading="lazy" decoding="async">
-        <div class="text-block">
-          <span class="theme-title">"Live in The Wall"</span>
-          <span class="subtitle"><i>My Master’s Graduation Collection<br>Bunka Fashion Graduate University (BFGU, 2021)</i></span>
-        </div>
-      </a>
-
-      <a href="../FACE-book/FACE-book.html" class="theme-row face-row reveal">
-        <img src="../FACE-book/images/サムネイル.webp" class="face-thumb" alt="FACE book" loading="lazy" decoding="async">
-        <div class="text-block"></div>
-      </a>
-
-      <a href="../Don’t-say-Goodnight/Don’t-say-Goodnight.html" class="theme-row left-image reveal">
-        <img src="../Don’t-say-Goodnight/images/サムネイル.webp" alt="Don’t say Goodnight" loading="lazy" decoding="async">
-        <div class="text-block">
-          <span class="theme-title">Don’t say Goodnight</span>
-          <span class="subtitle"><i>Music is the key.</i></span>
-        </div>
-      </a>
-
-      <a href="../Ledmaynes-SS25/Ledmaynes-SS25.html" class="theme-row right-image reveal">
-        <div class="text-block">
-          <span class="theme-title">Ledmaynes SS25</span>
-          <span class="subtitle"><i>"recto verso"</i></span>
-        </div>
-        <img src="../Ledmaynes-SS25/images/サムネイル.webp" alt="Ledmaynes SS25" loading="lazy" decoding="async">
-      </a>
     </div>
 
-    <!-- 右ページ -->
-    <div>
-      <a href="../Carols実験/Carols実験.html" class="theme-row right-image reveal">
-        <div class="text-block">
-          <span class="theme-title">Carols実験</span>
-        </div>
-        <img src="../Carols実験/images/サムネイル.webp" alt="Carols実験" loading="lazy" decoding="async">
-      </a>
+    <p class="hint" id="hint" aria-hidden="true">← drag / swipe →</p>
 
-      <a href="../HangZhou-Portrait/HangZhou-Portrait.html" class="theme-row left-image reveal">
-        <img src="../HangZhou-Portrait/images/サムネイル.webp" alt="HangZhou Portrait" loading="lazy" decoding="async">
-        <div class="text-block">
-          <span class="theme-title">HangZhou Portrait</span>
-          <span class="subtitle"><i>Always on journey with my friend.</i></span>
-        </div>
-      </a>
-
-      <a href="../Red/Red.html" class="theme-row right-image reveal">
-        <div class="text-block">
-          <span class="theme-title">Red</span>
-        </div>
-        <img src="../Red/images/サムネイル.webp" alt="Red" loading="lazy" decoding="async">
-      </a>
-
-      <a href="../Downward-is-Heavenward/Downward-is-Heavenward.html" class="theme-row left-image reveal">
-        <img src="../Downward-is-Heavenward/images/サムネイル.webp" alt="Downward is Heavenward" loading="lazy" decoding="async">
-        <div class="text-block">
-          <span class="theme-title">*Downward is Heavenward*</span>
-          <span class="subtitle"><i>{“Pedal to the ground. A lovely mess that I am blessed to see of me.”:<br>{“A dusty sleep you took too soon,”:<br>{“and you need watering if you are to bloom.}}</i></span>
-        </div>
-      </a>
-
-      <a href="../GoforYourGuns/GoforYourGuns.html" class="theme-row right-image reveal">
-        <div class="text-block">
-          <span class="theme-title">Go for Your Guns</span>
-        </div>
-        <img src="../GoforYourGuns/images/サムネイル.webp" alt="Go for Your Guns" loading="lazy" decoding="async">
-      </a>
-    </div>
-
+    <!-- ページ最下部の雪（JSで ❄︎ を横一列に生成） -->
+    <div class="snowbed" id="snowbed" aria-hidden="true"></div>
   </div>
-
-  <div class="pagination reveal">
-    <span class="page-btn" aria-disabled="true">«</span>
-    <span class="page-number">1 / 2</span>
-    <a href="gallery-page2.html" class="page-btn" aria-label="次のページ">»</a>
-  </div>
-
 </main>
 
 <script>
@@ -418,13 +500,114 @@ a.page-btn:hover { color: #8c8c8c; transform: scale(.98); }
     if (e.key === 'Escape' && menu.classList.contains('open')) setMenu(false, true);
   });
 
-  /* ================= 登場アニメーション ================= */
-  Promise.race([document.fonts ? document.fonts.ready : 0, wait(400)]).then(startReveal);
+  /* ================= 潜水艦ギャラリー ================= */
+  const viewport = document.getElementById('viewport');
+  const hint = document.getElementById('hint');
+  let sceneDragging = false;
 
-  function startReveal() {
-    const items = document.querySelectorAll('.reveal');
+  /* --- 横スクロール：タッチ・トラックパッド・キーは標準のスクロール。マウスはドラッグ＋慣性 --- */
+  let hTarget = viewport.scrollLeft, hAnim = false;
+  let hDown = false, hMoved = false, suppressClick = false;
+  let sx = 0, lx = 0, lt = 0, vel = 0, pid = null;
+  const maxScroll = () => viewport.scrollWidth - viewport.clientWidth;
+  const hClamp = v => Math.max(0, Math.min(maxScroll(), v));
+
+  function hStep() {
+    const d = hTarget - viewport.scrollLeft;
+    if (Math.abs(d) < 1) { viewport.scrollLeft = hTarget; hAnim = false; return; }
+    const s = d * (reduce.matches ? 1 : .14);
+    viewport.scrollLeft += Math.abs(s) < 1 ? Math.sign(d) : s;
+    requestAnimationFrame(hStep);
+  }
+  function hMove(v) {
+    hTarget = hClamp(v);
+    if (!hAnim) { hAnim = true; requestAnimationFrame(hStep); }
+  }
+
+  viewport.addEventListener('scroll', () => {
+    if (!hAnim) hTarget = viewport.scrollLeft;
+    if (hintReady) hint.classList.add('off');
+  }, { passive: true });
+
+  /* --- 最初の表示位置：艦尾を左の外へ送る（横にスクロールすれば艦尾まで見られる） --- */
+  let hintReady = false;
+  function setStart() {
+    const kpx = document.querySelector('.track').offsetHeight / 940;
+    const start = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--start')) || 0;
+    viewport.scrollLeft = Math.round(start * kpx);
+    hTarget = viewport.scrollLeft;
+  }
+  setStart();
+  setTimeout(() => { hintReady = true; }, 500);
+
+  viewport.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    hDown = true; hMoved = false;
+    sx = lx = e.clientX; lt = e.timeStamp; vel = 0; pid = e.pointerId;
+    hTarget = viewport.scrollLeft;
+  });
+  viewport.addEventListener('pointermove', e => {
+    if (!hDown || e.pointerId !== pid) return;
+    if (!hMoved) {
+      if (Math.abs(e.clientX - sx) < 6) return;          // 6px未満はクリック扱い
+      hMoved = true; sceneDragging = true;
+      try { viewport.setPointerCapture(pid); } catch (_) {}
+      scaleTarget = .75; kick();
+    }
+    const dx = e.clientX - lx, dt = e.timeStamp - lt;
+    lx = e.clientX; lt = e.timeStamp;
+    if (dt > 0) vel = vel * .8 + (dx / dt) * .2;
+    hMove(hTarget - dx);
+  });
+  function hEnd(e) {
+    if (!hDown || e.pointerId !== pid) return;
+    hDown = false;
+    if (hMoved) {
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0);
+      if (e.type === 'pointerup' && !reduce.matches) hMove(hTarget - vel * 240);   // 慣性
+      sceneDragging = false;
+      scaleTarget = 1; kick();
+    }
+    hMoved = false;
+  }
+  viewport.addEventListener('pointerup', hEnd);
+  viewport.addEventListener('pointercancel', hEnd);
+  viewport.addEventListener('click', e => {              // ドラッグ直後に窓のリンクが開かないように
+    if (suppressClick) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+  viewport.addEventListener('dragstart', e => e.preventDefault());
+
+  document.addEventListener('keydown', e => {            // ← → で窓1つ分ずつ
+    if (menu.classList.contains('open')) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const step = document.querySelector('.win').offsetWidth * 1.23;
+    hMove(hTarget + (e.key === 'ArrowLeft' ? -step : step));
+  });
+
+  /* --- 文字が窓に必ず収まるよう、はみ出す場合だけ文字サイズを少しずつ縮める --- */
+  function fitWindows() {
+    document.querySelectorAll('.win .txt').forEach(t => {
+      const w = t.closest('.win');
+      let s = 1, n = 0;
+      w.style.setProperty('--ts', 1);
+      while (t.scrollHeight > t.clientHeight + 1 && s > .55 && n++ < 24) {
+        s -= .03;
+        w.style.setProperty('--ts', s.toFixed(2));
+      }
+    });
+  }
+  let fitTimer;
+  addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitWindows, 120); });
+  addEventListener('load', fitWindows);
+  if (document.fonts) document.fonts.ready.then(fitWindows);
+  fitWindows();
+
+  /* --- 窓が順番にふわっと現れる --- */
+  const revealEls = [...document.querySelectorAll('.win, .about-bubble')];
+  Promise.race([document.fonts ? document.fonts.ready : 0, wait(400)]).then(() => {
     if (reduce.matches || !('IntersectionObserver' in window)) {
-      items.forEach(el => el.classList.add('shown'));
+      revealEls.forEach(el => el.classList.add('shown'));
       return;
     }
     let batch = 0;
@@ -432,13 +615,15 @@ a.page-btn:hover { color: #8c8c8c; transform: scale(.98); }
       batch = 0;
       entries.forEach(en => {
         if (!en.isIntersecting) return;
-        en.target.style.transitionDelay = (batch++ * 70) + 'ms'; // 順番にふわっと
-        en.target.classList.add('shown');
-        io.unobserve(en.target);
+        en.target.style.transitionDelay = (batch++ * 90) + 'ms';
+        const el = en.target;
+        el.classList.add('shown');
+        setTimeout(() => { el.style.transitionDelay = ''; }, 1800);   // 登場後は遅延を外して、ホバーの反応を即時に
+        io.unobserve(el);
       });
-    }, { threshold: .1 });
-    items.forEach(el => io.observe(el));
-  }
+    }, { threshold: .05 });
+    revealEls.forEach(el => io.observe(el));
+  });
 
   /* ================= 雪のカーソル ================= */
   const main  = makeFlake('main');
@@ -505,9 +690,158 @@ a.page-btn:hover { color: #8c8c8c; transform: scale(.98); }
   // リンク・ボタン上では雪が大きくなる
   document.addEventListener('pointerover', e => {
     if (e.pointerType !== 'mouse') return;
+    if (sceneDragging) return;
     scaleTarget = e.target.closest('a, button') ? 1.4 : 1;
     kick();
   });
+
+
+  /* ================= ページ最下部の雪 ================= */
+  const SNOW_ALPHA = [.8, .8];                         // 降る雪・最下部の雪に共通の明るさ（透明度）の範囲
+  const bed = document.getElementById('snowbed');
+  let sf = [], sfN = 0, sfHover = false, sfCursor = 0, sfRun = false, sfLast = 0;
+  const SF_SIZE = 25, SF_PAD = 8;                       // 雪の大きさ（カーソルの雪50pxの半分）
+  const rnd = (a, b) => a + Math.random() * (b - a);
+
+  function buildSnow() {
+    const w = bed.clientWidth;
+    const n = Math.max(3, Math.round(w / 30));
+    if (n === sfN) return;
+    sfN = n;
+    bed.textContent = '';
+    sf = [];
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement('span');
+      el.className = 'sf';
+      el.style.opacity = rnd(SNOW_ALPHA[0], SNOW_ALPHA[1]).toFixed(2);
+      el.style.left = ((i + .5) / n * 100) + '%';
+      const ic = document.createElement('i');
+      ic.textContent = '❄︎';
+      // 回転の速さ・向き・開始位置を1つずつ変える（同時に回らない）
+      ic.style.setProperty('--d', rnd(18, 42).toFixed(1) + 's');
+      ic.style.setProperty('--del', (-rnd(0, 40)).toFixed(1) + 's');
+      ic.style.setProperty('--dir', Math.random() < .5 ? 'normal' : 'reverse');
+      el.appendChild(ic);
+      bed.appendChild(el);
+      sf.push({ el, y: 0, vy: 0, jit: rnd(.8, 1.12), start: 0 });
+    }
+  }
+  const sfMax = () => Math.max(20, bed.clientHeight - SF_SIZE - SF_PAD - 6);
+  const SF_RANGE = 130;                                                // 反応する範囲：カーソルの左右130px（約260px幅）
+  function sfTarget(f, i) {
+    const fx = (i + .5) / sfN * bed.clientWidth;
+    const d = Math.abs(fx - sfCursor) / SF_RANGE;
+    if (d >= 1) return 0;                                              // 範囲外の雪は動かない
+    return sfMax() * (1 - d * d) * f.jit;                              // 中心ほど高く、端はなだらかに0へ
+  }
+  function sfSet(on, now) {
+    sfHover = on;
+    if (on) sf.forEach((f, i) => {                                    // カーソル位置から波のように時間差で跳ねる
+      const fx = (i + .5) / sfN * bed.clientWidth;
+      f.start = now + Math.min(240, Math.abs(fx - sfCursor) * .45) + rnd(0, 50);
+    });
+    sfKick();
+  }
+  function sfKick() {
+    if (sfRun) return;
+    sfRun = true; sfLast = performance.now();
+    requestAnimationFrame(sfFrame);
+  }
+  function sfFrame(now) {
+    const dt = Math.min((now - sfLast) / 1000, .033) || .016;
+    sfLast = now;
+    let busy = false;
+    sf.forEach((f, i) => {
+      if (reduce.matches) {                                           // 動きを減らす設定：即時に切り替え
+        f.y = sfHover ? sfTarget(f, i) * .6 : 0; f.vy = 0;
+      } else if (sfHover && sfTarget(f, i) > .5) {
+        if (now < f.start) { busy = true; }
+        else {                                                        // 少し弾むバネで素早く浮き上がる
+          const a = (sfTarget(f, i) - f.y) * 300 - f.vy * 19;
+          f.vy += a * dt; f.y += f.vy * dt;
+          if (Math.abs(sfTarget(f, i) - f.y) > .4 || Math.abs(f.vy) > .8) busy = true;
+        }
+      } else {                                                        // 手を離すと重力で落ち、小さく弾んで止まる
+        if (f.y > 0 || f.vy !== 0) {
+          f.vy -= 2300 * dt; f.y += f.vy * dt;
+          if (f.y <= 0) { f.y = 0; f.vy = Math.abs(f.vy) > 160 ? -f.vy * .28 : 0; }
+          busy = busy || f.y > 0 || f.vy !== 0;
+        }
+      }
+      f.el.style.transform = f.y ? `translate3d(0, ${(-f.y).toFixed(1)}px, 0)` : '';
+    });
+    if (busy) requestAnimationFrame(sfFrame); else sfRun = false;
+  }
+  const bedX = e => e.clientX - bed.getBoundingClientRect().left;
+  bed.addEventListener('pointerenter', e => { sfCursor = bedX(e); sfSet(true, performance.now()); });
+  bed.addEventListener('pointermove', e => { sfCursor = bedX(e); if (sfHover) sfKick(); }, { passive: true });
+  bed.addEventListener('pointerleave', () => sfSet(false, performance.now()));
+  bed.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { sfCursor = bedX(e); sfSet(true, performance.now()); } });
+  ['pointerup', 'pointercancel'].forEach(ev => bed.addEventListener(ev, e => { if (e.pointerType !== 'mouse') sfSet(false, performance.now()); }));
+  buildSnow();
+  addEventListener('resize', buildSnow);
+
+
+  /* ================= 画面全体の降雪：少数がランダムに現れ、ゆっくり落ちて消える ================= */
+  (() => {
+    const layer = document.getElementById('snowfall');
+    if (!layer || reduce.matches) return;                           // 動きを減らす設定では降らせない
+    let W = innerWidth, H = innerHeight;
+    const flakes = [];
+    const want = () => (W < 640 ? 6 : W < 1100 ? 9 : 12);           // 雪の数の上限（スマホは少なめ）
+    const r = (a, b) => a + Math.random() * (b - a);
+
+    function spawn(f) {
+      // 他の雪と近すぎない横位置を選び、特定の場所に集中させない
+      let x = r(20, W - 20);
+      for (let k = 0; k < 8; k++) {
+        const c = r(20, W - 20);
+        if (flakes.every(o => o === f || o.on === false || Math.abs(o.bx - c) > 110)) { x = c; break; }
+      }
+      f.on = true; f.t = 0;
+      f.bx = x; f.y = r(-50, H * .6);                               // さまざまな高さから出現
+      f.vy = r(18, 44);                                             // 落下速度（px/秒）
+      f.amp = r(10, 38); f.w = r(.35, 1);  f.ph = r(0, 6.28);       // 揺れの幅・速さ・位相
+      f.rot = r(0, 360); f.rs = r(5, 16) * (Math.random() < .5 ? -1 : 1);   // さりげない回転
+      f.amax = r(SNOW_ALPHA[0], SNOW_ALPHA[1]);                     // 明るさ（最下部の雪と共通）
+    }
+    function add() {
+      const el = document.createElement('span');
+      el.className = 'sfall'; el.textContent = '❄︎';
+      layer.appendChild(el);
+      const f = { el, on: false, wait: r(0, 7), bx: 0, y: 0, t: 0 };
+      flakes.push(f);
+    }
+    function sync() {
+      W = innerWidth; H = innerHeight;
+      while (flakes.length < want()) add();
+      while (flakes.length > want()) { const f = flakes.pop(); f.el.remove(); }
+    }
+    let last = performance.now();
+    function loop(now) {
+      const dt = Math.min((now - last) / 1000, .05); last = now;
+      for (const f of flakes) {
+        if (!f.on) {
+          f.wait -= dt;
+          if (f.wait <= 0) spawn(f);
+          continue;
+        }
+        f.t += dt; f.y += f.vy * dt; f.rot += f.rs * dt;
+        const inA = Math.min(1, f.t / 2);                            // フェードイン
+        const outA = f.y > H * .8 ? Math.max(0, (H + 10 - f.y) / (H * .2 + 10)) : 1;   // 下端でフェードアウト
+        if (f.y > H + 10 || outA <= 0) {
+          f.on = false; f.wait = r(.5, 4); f.el.style.opacity = 0; continue;
+        }
+        const x = f.bx + Math.sin(f.t * f.w + f.ph) * f.amp - 25;
+        f.el.style.transform = `translate3d(${x.toFixed(1)}px, ${(f.y - 25).toFixed(1)}px, 0) rotate(${f.rot.toFixed(1)}deg)`;
+        f.el.style.opacity = (f.amax * inA * outA).toFixed(3);
+      }
+      requestAnimationFrame(loop);
+    }
+    sync();
+    addEventListener('resize', sync);
+    requestAnimationFrame(loop);
+  })();
 
   /* ================= クリックで雪が舞う ================= */
   document.addEventListener('click', e => {
