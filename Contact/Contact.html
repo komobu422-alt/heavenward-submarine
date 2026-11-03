@@ -394,11 +394,30 @@ button:active { transform: scale(.97); }
 .form-status { margin: 16px 0 0 4px; font-size: 14px; line-height: 1.4; }
 .form-status:empty { display: none; }
 .form-status[data-type="err"] { color: #ffc2c2; }
+
+/* ===== 降雪と最下部の雪（Galleryページと同じ） ===== */
+:root { --snowh: 120px; }                                   /* 最下部の雪エリアの高さ */
+body { position: relative; min-height: calc(100vh - 2px); box-sizing: border-box; padding-bottom: 24px; }   /* 2px＝上部ビジュアルの上余白（ページが1画面に収まるとき、余計なスクロールが出ない） */   /* 雪エリアをページの最下部に置く（内容とは重ならない） */
+@media screen and (max-width: 768px) { body { min-height: calc(100vh - 10px); padding-bottom: 44px; } }
+
+/* ================= 画面全体の降雪（控えめ・操作を妨げない） ================= */
+.snowfall { position: fixed; inset: 0; z-index: 99998; pointer-events: none; overflow: hidden;   /* 最前面（カーソルの雪のすぐ下）。操作は通過 */ }
+.sfall { position: absolute; left: 0; top: 0; width: 1em; height: 1em; font-size: 35px; line-height: 1; text-align: center; color: #fff; opacity: 0; pointer-events: none; user-select: none; -webkit-user-select: none; will-change: transform, opacity; }
+
+/* ================= ページ最下部の雪 ================= */
+.snowbed { position: absolute; left: 0; right: 0; bottom: 0; height: var(--snowh); z-index: 5; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.sf { position: absolute; bottom: 8px; width: 1em; height: 1em; margin-left: -.5em; font-size: 25px; line-height: 1; color: #fff; will-change: transform; }
+.sf i { display: block; width: 100%; height: 100%; text-align: center; font-style: normal; animation: sfspin var(--d, 24s) linear var(--del, 0s) infinite var(--dir, normal); }
+@keyframes sfspin { to { transform: rotate(360deg); } }
+
 </style>
 
 </head>
 
 <body>
+<!-- 画面全体にゆっくり降る雪（最前面・操作は通過。JSで生成） -->
+<div class="snowfall" id="snowfall" aria-hidden="true"></div>
+
 
 <!-- ロゴ -->
 <a href="../index.html" class="logo">Heavenward Submarine</a>
@@ -463,6 +482,9 @@ button:active { transform: scale(.97); }
     </div>
 
 </div>
+
+<!-- ページ最下部の雪（JSで ❄︎ を横一列に生成） -->
+<div class="snowbed" id="snowbed" aria-hidden="true"></div>
 
 <script>
 (() => {
@@ -582,6 +604,153 @@ button:active { transform: scale(.97); }
     scaleTarget = e.target.closest('a, button, .menu-btn') ? 1.4 : (e.target.closest('input, textarea') ? .7 : 1);
     kick();
   });
+
+  /* ================= ページ最下部の雪 ================= */
+  const SNOW_ALPHA = [.8, .8];                         // 降る雪・最下部の雪に共通の明るさ（透明度）の範囲
+  const bed = document.getElementById('snowbed');
+  let sf = [], sfN = 0, sfHover = false, sfCursor = 0, sfRun = false, sfLast = 0;
+  const SF_SIZE = 25, SF_PAD = 8;                       // 雪の大きさ（カーソルの雪50pxの半分）
+  const rnd = (a, b) => a + Math.random() * (b - a);
+
+  function buildSnow() {
+    const w = bed.clientWidth;
+    const n = Math.max(3, Math.round(w / 30));
+    if (n === sfN) return;
+    sfN = n;
+    bed.textContent = '';
+    sf = [];
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement('span');
+      el.className = 'sf';
+      el.style.opacity = rnd(SNOW_ALPHA[0], SNOW_ALPHA[1]).toFixed(2);
+      el.style.left = ((i + .5) / n * 100) + '%';
+      const ic = document.createElement('i');
+      ic.textContent = '❄︎';
+      // 回転の速さ・向き・開始位置を1つずつ変える（同時に回らない）
+      ic.style.setProperty('--d', rnd(18, 42).toFixed(1) + 's');
+      ic.style.setProperty('--del', (-rnd(0, 40)).toFixed(1) + 's');
+      ic.style.setProperty('--dir', Math.random() < .5 ? 'normal' : 'reverse');
+      el.appendChild(ic);
+      bed.appendChild(el);
+      sf.push({ el, y: 0, vy: 0, jit: rnd(.8, 1.12), start: 0 });
+    }
+  }
+  const sfMax = () => Math.max(20, bed.clientHeight - SF_SIZE - SF_PAD - 6);
+  const SF_RANGE = 130;                                                // 反応する範囲：カーソルの左右130px（約260px幅）
+  function sfTarget(f, i) {
+    const fx = (i + .5) / sfN * bed.clientWidth;
+    const d = Math.abs(fx - sfCursor) / SF_RANGE;
+    if (d >= 1) return 0;                                              // 範囲外の雪は動かない
+    return sfMax() * (1 - d * d) * f.jit;                              // 中心ほど高く、端はなだらかに0へ
+  }
+  function sfSet(on, now) {
+    sfHover = on;
+    if (on) sf.forEach((f, i) => {                                    // カーソル位置から波のように時間差で跳ねる
+      const fx = (i + .5) / sfN * bed.clientWidth;
+      f.start = now + Math.min(240, Math.abs(fx - sfCursor) * .45) + rnd(0, 50);
+    });
+    sfKick();
+  }
+  function sfKick() {
+    if (sfRun) return;
+    sfRun = true; sfLast = performance.now();
+    requestAnimationFrame(sfFrame);
+  }
+  function sfFrame(now) {
+    const dt = Math.min((now - sfLast) / 1000, .033) || .016;
+    sfLast = now;
+    let busy = false;
+    sf.forEach((f, i) => {
+      if (reduce.matches) {                                           // 動きを減らす設定：即時に切り替え
+        f.y = sfHover ? sfTarget(f, i) * .6 : 0; f.vy = 0;
+      } else if (sfHover && sfTarget(f, i) > .5) {
+        if (now < f.start) { busy = true; }
+        else {                                                        // 少し弾むバネで素早く浮き上がる
+          const a = (sfTarget(f, i) - f.y) * 300 - f.vy * 19;
+          f.vy += a * dt; f.y += f.vy * dt;
+          if (Math.abs(sfTarget(f, i) - f.y) > .4 || Math.abs(f.vy) > .8) busy = true;
+        }
+      } else {                                                        // 手を離すと重力で落ち、小さく弾んで止まる
+        if (f.y > 0 || f.vy !== 0) {
+          f.vy -= 2300 * dt; f.y += f.vy * dt;
+          if (f.y <= 0) { f.y = 0; f.vy = Math.abs(f.vy) > 160 ? -f.vy * .28 : 0; }
+          busy = busy || f.y > 0 || f.vy !== 0;
+        }
+      }
+      f.el.style.transform = f.y ? `translate3d(0, ${(-f.y).toFixed(1)}px, 0)` : '';
+    });
+    if (busy) requestAnimationFrame(sfFrame); else sfRun = false;
+  }
+  const bedX = e => e.clientX - bed.getBoundingClientRect().left;
+  bed.addEventListener('pointerenter', e => { sfCursor = bedX(e); sfSet(true, performance.now()); });
+  bed.addEventListener('pointermove', e => { sfCursor = bedX(e); if (sfHover) sfKick(); }, { passive: true });
+  bed.addEventListener('pointerleave', () => sfSet(false, performance.now()));
+  bed.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') { sfCursor = bedX(e); sfSet(true, performance.now()); } });
+  ['pointerup', 'pointercancel'].forEach(ev => bed.addEventListener(ev, e => { if (e.pointerType !== 'mouse') sfSet(false, performance.now()); }));
+  buildSnow();
+  addEventListener('resize', buildSnow);
+
+
+  /* ================= 画面全体の降雪：少数がランダムに現れ、ゆっくり落ちて消える ================= */
+  (() => {
+    const layer = document.getElementById('snowfall');
+    if (!layer || reduce.matches) return;                           // 動きを減らす設定では降らせない
+    let W = innerWidth, H = innerHeight;
+    const flakes = [];
+    const want = () => (W < 640 ? 6 : W < 1100 ? 9 : 12);           // 雪の数の上限（スマホは少なめ）
+    const r = (a, b) => a + Math.random() * (b - a);
+
+    function spawn(f) {
+      // 他の雪と近すぎない横位置を選び、特定の場所に集中させない
+      let x = r(20, W - 20);
+      for (let k = 0; k < 8; k++) {
+        const c = r(20, W - 20);
+        if (flakes.every(o => o === f || o.on === false || Math.abs(o.bx - c) > 110)) { x = c; break; }
+      }
+      f.on = true; f.t = 0;
+      f.bx = x; f.y = r(-50, H * .6);                               // さまざまな高さから出現
+      f.vy = r(18, 44);                                             // 落下速度（px/秒）
+      f.amp = r(10, 38); f.w = r(.35, 1);  f.ph = r(0, 6.28);       // 揺れの幅・速さ・位相
+      f.rot = r(0, 360); f.rs = r(5, 16) * (Math.random() < .5 ? -1 : 1);   // さりげない回転
+      f.amax = r(SNOW_ALPHA[0], SNOW_ALPHA[1]);                     // 明るさ（最下部の雪と共通）
+    }
+    function add() {
+      const el = document.createElement('span');
+      el.className = 'sfall'; el.textContent = '❄︎';
+      layer.appendChild(el);
+      const f = { el, on: false, wait: r(0, 7), bx: 0, y: 0, t: 0 };
+      flakes.push(f);
+    }
+    function sync() {
+      W = innerWidth; H = innerHeight;
+      while (flakes.length < want()) add();
+      while (flakes.length > want()) { const f = flakes.pop(); f.el.remove(); }
+    }
+    let last = performance.now();
+    function loop(now) {
+      const dt = Math.min((now - last) / 1000, .05); last = now;
+      for (const f of flakes) {
+        if (!f.on) {
+          f.wait -= dt;
+          if (f.wait <= 0) spawn(f);
+          continue;
+        }
+        f.t += dt; f.y += f.vy * dt; f.rot += f.rs * dt;
+        const inA = Math.min(1, f.t / 2);                            // フェードイン
+        const outA = f.y > H * .8 ? Math.max(0, (H + 10 - f.y) / (H * .2 + 10)) : 1;   // 下端でフェードアウト
+        if (f.y > H + 10 || outA <= 0) {
+          f.on = false; f.wait = r(.5, 4); f.el.style.opacity = 0; continue;
+        }
+        const x = f.bx + Math.sin(f.t * f.w + f.ph) * f.amp - 25;
+        f.el.style.transform = `translate3d(${x.toFixed(1)}px, ${(f.y - 25).toFixed(1)}px, 0) rotate(${f.rot.toFixed(1)}deg)`;
+        f.el.style.opacity = (f.amax * inA * outA).toFixed(3);
+      }
+      requestAnimationFrame(loop);
+    }
+    sync();
+    addEventListener('resize', sync);
+    requestAnimationFrame(loop);
+  })();
 
   /* ================= クリックで雪が舞う ================= */
   document.addEventListener('click', e => {
